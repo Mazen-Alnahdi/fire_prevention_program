@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="fire_prevention_program"
-        android:name="${Fire Prevent}"
+        android:name="com.example.fire_prevention_program"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
