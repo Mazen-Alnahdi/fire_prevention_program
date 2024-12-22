@@ -1,11 +1,13 @@
 
 
 import 'dart:convert';
+import 'package:fire_prevention_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,6 +20,12 @@ class _HomeState extends State<Home> {
 
   LatLng? selectedLocation; // Store the selected location
   String? address; // Store the reverse-geocoded address
+  double? temp, rh, wind, rain; //Store the FFMC values to calc
+  double? FWI;
+  FireWeatherIndex fwi = new FireWeatherIndex();
+
+
+  final String key= dotenv.env["API_KEY"]!;
 
   Future<void> fetchAddressFromCoordinates(LatLng coords) async {
     final url = Uri.parse(
@@ -37,6 +45,42 @@ class _HomeState extends State<Home> {
         address = 'Error fetching address';
       });
     }
+
+    final url2 = Uri.parse("https://api.weatherapi.com/v1/current.json?q=${coords.latitude}%2C%20${coords.longitude}&key=${key}");
+
+    try {
+      final response = await http.get(url2);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        setState(() {
+          temp = data['current']['temp_c'];
+          rh = data['current']['humidity'];
+          wind = data['current']['wind_kph'];
+          rain = data['current']['precip_mm'];
+          FWI=fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
+        });
+      } else {
+        setState(() {
+          temp = 0;
+          rh = 0;
+          wind = 0;
+          rain = 0;
+          FWI=0;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        temp = 0;
+        rh = 0;
+        wind = 0;
+        rain = 0;
+        FWI=0;
+      });
+    }
+
+
+
   }
 
   @override
@@ -50,7 +94,7 @@ class _HomeState extends State<Home> {
         children: [
           FlutterMap(
             options: MapOptions(
-              initialCenter: LatLng(29.3757, 47.9773),// Default to London
+              initialCenter: LatLng(29.3757, 47.9773),// Default to Kuwait City
               initialZoom: 13.0,
               onTap: (tapPosition, point) async {
                 setState(() {
@@ -103,6 +147,9 @@ class _HomeState extends State<Home> {
                         style: TextStyle(color: Colors.grey[700]),
                         textAlign: TextAlign.center,
                       ),
+                    Text("Temp: ${temp}, RH: ${rh}, Wind: ${wind}, Rain: ${rain}"),
+
+                    Text("Today's Fire Weather Index is ${FWI} ")
                   ],
                 ),
               ),
