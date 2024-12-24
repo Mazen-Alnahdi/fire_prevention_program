@@ -268,7 +268,9 @@ class _CalcState extends State<Calc> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("The Probability of a Fire is ${result}"),
+                    Text("The Probability of a Fire is ${result}",
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                    fontSize: 15),),
                   ],
                 ),
                 const SizedBox(height: 20,),
@@ -276,7 +278,7 @@ class _CalcState extends State<Calc> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                        style: ButtonStyle(
+                        style:ButtonStyle(
                           foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                           overlayColor: WidgetStateProperty.resolveWith<Color?>(
                                 (Set<WidgetState> states) {
@@ -302,6 +304,8 @@ class _CalcState extends State<Calc> {
                           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Rounded corners
                           ),
+                          padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(vertical: 16, horizontal: 32)), // Adjust padding for bigger button
+                          minimumSize: WidgetStateProperty.all(Size(200, 50)), // Fixed width and height
                         ),
 
                         onPressed: () {
