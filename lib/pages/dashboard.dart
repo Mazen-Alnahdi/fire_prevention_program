@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'home.dart';
-import 'info.dart';
+import 'calculator.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -14,8 +14,9 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   int _currentIndex = 0;
-  Color backIcon = Colors.black;
-  Color selectIcon = Colors.white;
+  Color backIcon = Colors.red;
+  Color selectIcon = Colors.orange;
+  Color backgroundColor = Colors.orange;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,7 @@ class _DashBoardState extends State<DashBoard> {
       ),
 
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: backgroundColor,
           items: <BottomNavigationBarItem> [
             BottomNavigationBarItem(
                 icon: const Icon(

@@ -23,7 +23,9 @@ class _HomeState extends State<Home> {
   double? temp, rh, wind, rain; //Store the FFMC values to calc
   double? FWI;
   FireWeatherIndex fwi = new FireWeatherIndex();
+  String result="";
 
+  Color textColor = Colors.white;
 
   final String key= dotenv.env["API_KEY"]!;
 
@@ -72,7 +74,19 @@ class _HomeState extends State<Home> {
 
 
           FWI=fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
-
+          if(FWI!<5.2){
+            result="Very Low Danger";
+          } else if(FWI!>=5.2&&FWI!<11.2){
+            result="Low Danger";
+          } else if(FWI!>=11.2&&FWI!<21.3){
+            result="Moderate Danger";
+          } else if(FWI!>=21.3&&FWI!<38.0){
+            result="High Danger";
+          } else if(FWI!>=38.0&&FWI!<50){
+            result="Very High Danger";
+          } else {
+            result="NO DATA GIVEN";
+          }
 
         });
       } else {
@@ -104,7 +118,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Check Fire'),
+        title: Text('Fire Detection'),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: Stack(
@@ -147,26 +163,24 @@ class _HomeState extends State<Home> {
               right: 20,
               child: Container(
                 padding: EdgeInsets.all(10),
-                color: Colors.white,
+                color: Colors.orange,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Selected Location:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Lat: ${selectedLocation!.latitude}, Lon: ${selectedLocation!.longitude}',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
                     ),
                     if (address != null)
                       Text(
                         'Address: $address',
-                        style: TextStyle(color: Colors.grey[700]),
+                        style: TextStyle(color: Colors.white70),
                         textAlign: TextAlign.center,
                       ),
-                    Text("Temp: ${temp}, RH: ${rh}, Wind: ${wind}, Rain: ${rain}"),
-
-                    Text("Today's Fire Weather Index is ${FWI} ")
+                    Text("Temp: ${temp}, RH: ${rh}", style: TextStyle(color: textColor),),
+                    Text("Wind: ${wind}, Rain: ${rain}", style: TextStyle(color: textColor),),
+                    Text("Today's Probability of a Fire is",textAlign: TextAlign.center, style: TextStyle(color: textColor),),
+                    Text("${result}", textAlign: TextAlign.center, style: TextStyle(color: textColor),)
                   ],
                 ),
               ),
