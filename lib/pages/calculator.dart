@@ -1,9 +1,7 @@
-
 import 'package:fire_program/services/InputFormat.dart';
 import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 
 class Calc extends StatefulWidget {
   const Calc({super.key});
@@ -13,215 +11,117 @@ class Calc extends StatefulWidget {
 }
 
 class _CalcState extends State<Calc> {
-  final tempText=TextEditingController();
-  final rhText=TextEditingController();
-  final windText=TextEditingController();
-  final rainText=TextEditingController();
-  final latText=TextEditingController();
+  final tempText = TextEditingController();
+  final rhText = TextEditingController();
+  final windText = TextEditingController();
+  final rainText = TextEditingController();
+  final latText = TextEditingController();
 
-  double tempData=0.0;
-  double rhData=0.0;
-  double windData=0.0;
-  double rainData=0.0;
-  double latData=0.0;
+  double tempData = 0.0;
+  double rhData = 0.0;
+  double windData = 0.0;
+  double rainData = 0.0;
+  double latData = 0.0;
 
-
-
-  FireWeatherIndex fwi=new FireWeatherIndex();
+  FireWeatherIndex fwi = FireWeatherIndex();
   double? FWI;
-  String result="Empty";
+  String result = "Empty";
 
-  void _setData(){
+  void _setData() {
     setState(() {
-      if(tempText.text.isNotEmpty){
-        tempData=double.parse(tempText.text.trim());
-      } else if(tempText.text.isEmpty){
-        tempData=0.0;
-      }
-      if(rhText.text.isNotEmpty){
-        rhData=double.parse(rhText.text.trim());
-      } else if(rhText.text.isEmpty){
-        rhData=0.0;
-      }
-      if(windText.text.isNotEmpty){
-        windData=double.parse(windText.text.trim());
-      } else if(windText.text.isEmpty){
-        windData=0.0;
-      }
-      if(rainText.text.isNotEmpty){
-        rainData=double.parse(rainText.text.trim());
-      } else if(rainText.text.isEmpty){
-        rainData=0.0;
-      }
-      if(latText.text.isNotEmpty){
-        latData=double.parse(latText.text.trim());
-      } else if(latText.text.isEmpty){
-        latData=0.0;
-      }
+      tempData = double.tryParse(tempText.text.trim()) ?? 0.0;
+      rhData = double.tryParse(rhText.text.trim()) ?? 0.0;
+      windData = double.tryParse(windText.text.trim()) ?? 0.0;
+      rainData = double.tryParse(rainText.text.trim()) ?? 0.0;
+      latData = double.tryParse(latText.text.trim()) ?? 0.0;
     });
   }
 
+  Widget buildInputField(String label, TextEditingController controller, String description) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
+              InputFormat(),
+            ],
+            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Fire Calculator"),
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
       ),
-        body: Scrollbar(
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 65),
+        child: Scrollbar(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start, // Aligns columns at the top
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Aligns child elements
-                      children: [
-                        const Text(
-                          "Temperature",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 150, // Set a fixed width for the TextField
-                          child: TextField(
-                            controller: tempText,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                              InputFormat(),
-                            ],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: false),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 150,
-                          child: Text(
-                            "Temperature in Degrees Celsius is used in calculating the Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Aligns child elements
-                      children: [
-                        const Text(
-                          "Humidity",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 150, // Set a fixed width for the TextField
-                          child: TextField(
-                            controller: rhText,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                              InputFormat(),
-                            ],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: false),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 150,
-                          child: Text(
-                            "Humidity in Percentage is the measure of water vapour in the air and is used in Fine Fuel Moisture Code (FFMC) and Duff Moisture Code (DMC)",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+                buildInputField(
+                  "Temperature",
+                  tempText,
+                  "Temperature in Degrees Celsius is used in calculating the Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
+                ),
+                buildInputField(
+                  "Humidity",
+                  rhText,
+                  "Humidity in Percentage is the measure of water vapour in the air and is used in Fine Fuel Moisture Code (FFMC) and Duff Moisture Code (DMC)",
+                ),
+                buildInputField(
+                  "Wind",
+                  windText,
+                  "Wind Speed in kph is used in Fine Fuel Moisture Code (FFMC) and Initial Spread Index (ISI)",
+                ),
+                buildInputField(
+                  "Rain",
+                  rainText,
+                  "Accumulated rainfall in mm as known as Precipitation is used for Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
+                ),
+                buildInputField(
+                  "Latitude",
+                  latText,
+                  "Latitude in decimal degrees of the location for which calculations are being made and used for Duff Moisture Code (DMC) and Drought Code (DC)",
                 ),
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start, // Aligns columns at the top
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Aligns child elements
-                      children: [
-                        const Text(
-                          "Wind",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 150, // Set a fixed width for the TextField
-                          child: TextField(
-                            controller: windText,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                              InputFormat(),
-                            ],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: false),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 150,
-                          child: Text(
-                            "Wind Speed in kph is used in Fine Fuel Moisture Code (FFMC) and Initial Spread Index (ISI)",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Aligns child elements
-                      children: [
-                        const Text(
-                          "Rain",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 150, // Set a fixed width for the TextField
-                          child: TextField(
-                            controller: rainText,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                              InputFormat(),
-                            ],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: false),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 150,
-                          child: Text(
-                            "Accumulated rainfall in mm as known as Precipitation is used for Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
+                    Text(
+                      "The Probability of a Fire is $result",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                     ),
                   ],
                 ),
@@ -229,108 +129,77 @@ class _CalcState extends State<Calc> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        const Text(
-                          "Latitude",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 150, // Set a fixed width for the TextField
-                          child: TextField(
-                            controller: latText,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                              InputFormat(),
-                            ],
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: false),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 150,
-                          child: Text(
-                            "Latitude in decimal degrees of the location for which calculations are being made and used for Duff Moisture Code (DMC) and Drought Code (DC)",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("The Probability of a Fire is ${result}",
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                    fontSize: 15),),
-                  ],
-                ),
-                const SizedBox(height: 20,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                        style:ButtonStyle(
-                          foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
-                          overlayColor: WidgetStateProperty.resolveWith<Color?>(
-                                (Set<WidgetState> states) {
-                              if (states.contains(WidgetState.hovered)) {
-                                return Colors.orange.withOpacity(0.04);
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.hovered)) {
+                                return Colors.orangeAccent.withOpacity(0.8);
+                              } else if (states.contains(MaterialState.pressed)) {
+                                return Colors.deepOrange;
                               }
-                              if (states.contains(WidgetState.focused) || states.contains(WidgetState.pressed)) {
-                                return Colors.orange.withOpacity(0.12);
-                              }
-                              return null; // Defer to the widget's default.
+                              return Colors.orange;
                             },
                           ),
-                          side: WidgetStateProperty.resolveWith<BorderSide>(
-                                (Set<WidgetState> states) {
-                              if (states.contains(WidgetState.hovered) ||
-                                  states.contains(WidgetState.focused) ||
-                                  states.contains(WidgetState.pressed)) {
-                                return BorderSide(color: Colors.orange, width: 2); // Change border when interacting
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          overlayColor: MaterialStateProperty.all<Color>(
+                            Colors.orangeAccent.withOpacity(0.2),
+                          ),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          ),
+                          minimumSize: MaterialStateProperty.all<Size>(
+                            const Size(200, 50),
+                          ),
+                          elevation: MaterialStateProperty.resolveWith<double>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return 6;
                               }
-                              return BorderSide(color: Colors.black, width: 0.7); // Default border
+                              return 3;
                             },
                           ),
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Rounded corners
-                          ),
-                          padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(vertical: 16, horizontal: 32)), // Adjust padding for bigger button
-                          minimumSize: WidgetStateProperty.all(Size(200, 50)), // Fixed width and height
                         ),
-
                         onPressed: () {
-                          _setData();
-                          FWI=fwi.calcFWI(tempData, rhData, windData, rainData, latData);
-                          if(FWI!<5.2){
-                            result="Very Low Danger";
-                          } else if(FWI!>=5.2&&FWI!<11.2){
-                            result="Low Danger";
-                          } else if(FWI!>=11.2&&FWI!<21.3){
-                            result="Moderate Danger";
-                          } else if(FWI!>=21.3&&FWI!<38.0){
-                            result="High Danger";
-                          } else if(FWI!>=38.0){
-                            result="Very High Danger";
-                          }
+                          setState(() {
+                            _setData();
+                            FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
+                            if (FWI! < 5.2) {
+                              result = "Very Low Danger";
+                            } else if (FWI! >= 5.2 && FWI! < 11.2) {
+                              result = "Low Danger";
+                            } else if (FWI! >= 11.2 && FWI! < 21.3) {
+                              result = "Moderate Danger";
+                            } else if (FWI! >= 21.3 && FWI! < 38.0) {
+                              result = "High Danger";
+                            } else if (FWI! >= 38.0) {
+                              result = "Very High Danger";
+                            }
+                          });
                         },
-                        child: Text('CALCULATE')
-                    )
+                        child: const Text(
+                          'CALCULATE',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
-        )
+        ),
+      ),
     );
   }
 }

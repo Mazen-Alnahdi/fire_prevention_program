@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
   FireWeatherIndex fwi = new FireWeatherIndex();
   String result="";
 
-  Color textColor = Colors.white;
+  Color textColor = Colors.black;
 
   final String key= dotenv.env["API_KEY"]!;
 
@@ -119,8 +119,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fire Detection'),
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
       ),
       body: Stack(
@@ -146,7 +146,7 @@ class _HomeState extends State<Home> {
                   markers: [
                     Marker(
                       point: selectedLocation!,
-                      child:  Icon(
+                      child:  const Icon(
                         Icons.location_on, // A default location icon
                         color: Colors.red, // Red color for the marker
                         size: 40, // Set the size of the icon
@@ -158,29 +158,130 @@ class _HomeState extends State<Home> {
           ),
           if (selectedLocation != null)
             Positioned(
-              bottom: 20,
+              bottom: 100,
               left: 20,
               right: 20,
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 color: Colors.orange,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'Selected Location:',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                    Theme(
+                        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                        child: ExpansionTile(
+                          backgroundColor: Colors.transparent,
+                          collapsedBackgroundColor: Colors.transparent,
+                          title: Column(
+                            children: [
+                              if (address != null)
+                                const Text(
+                                  "Today's Probability of a Fire is",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.black),
+                                  softWrap: true, // Ensures the text wraps if it’s too long
+                                ),
+                              Text(
+                                "$result",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.black),
+                                softWrap: true, // Ensures the text wraps if it’s too long
+                                overflow: TextOverflow.visible, // Prevents text overflow
+                              ),
+                            ],
+                          ),
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                      child: ListTile(
+                                        title: Text(
+                                          "Temperature:\n${temp}\u00b0C",
+                                          textAlign: TextAlign.center, // Centers the text
+                                          style: TextStyle(color: Colors.black),
+                                          softWrap: true, // Ensures text wraps on overflow
+                                          overflow: TextOverflow.visible, // Allows text to wrap and show without truncation
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: ListTile(
+                                        title: Text(
+                                          "Humidity:\n${rh}%",
+                                          textAlign: TextAlign.center, // Centers the text
+                                          style: TextStyle(color: Colors.black),
+                                          softWrap: true, // Ensures text wraps on overflow
+                                          overflow: TextOverflow.visible, // Allows text to wrap and show without truncation
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                      child: ListTile(
+                                        title: Text(
+                                          "Wind:\n${wind}kph",
+                                          textAlign: TextAlign.center, // Centers the text
+                                          style: TextStyle(color: Colors.black),
+                                          softWrap: true, // Ensures text wraps on overflow
+                                          overflow: TextOverflow.visible, // Allows text to wrap and show without truncation
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: ListTile(
+                                        title: Text(
+                                          "Rain:\n${rain}mm",
+                                          textAlign: TextAlign.center, // Centers the text
+                                          style: TextStyle(color: Colors.black),
+                                          softWrap: true, // Ensures text wraps on overflow
+                                          overflow: TextOverflow.visible, // Allows text to wrap and show without truncation
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Center(
+                                  child: ListTile(
+                                    title: Text(
+                                      'Address: $address',
+                                      style: TextStyle(color: Colors.black),
+                                      textAlign: TextAlign.center,
+                                      softWrap: true, // Ensures text wraps on overflow
+                                      overflow: TextOverflow.visible, // Allows text to wrap and show without truncation
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
                     ),
-                    if (address != null)
-                      Text(
-                        'Address: $address',
-                        style: TextStyle(color: Colors.white70),
-                        textAlign: TextAlign.center,
-                      ),
-                    Text("Temp: ${temp}, RH: ${rh}", style: TextStyle(color: textColor),),
-                    Text("Wind: ${wind}, Rain: ${rain}", style: TextStyle(color: textColor),),
-                    Text("Today's Probability of a Fire is",textAlign: TextAlign.center, style: TextStyle(color: textColor),),
-                    Text("${result}", textAlign: TextAlign.center, style: TextStyle(color: textColor),)
+
+
+
+                    // Text(
+                    //   'Selected Location:',
+                    //   style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                    // ),
+                    // if (address != null)
+                    //   Text(
+                    //     'Address: $address',
+                    //     style: TextStyle(color: Colors.white70),
+                    //     textAlign: TextAlign.center,
+                    //   ),
+                    // Text("Temp: ${temp}, RH: ${rh}", style: TextStyle(color: textColor),),
+                    // Text("Wind: ${wind}, Rain: ${rain}", style: TextStyle(color: textColor),),
+                    // Text("Today's Probability of a Fire is",textAlign: TextAlign.center, style: TextStyle(color: textColor),),
+                    // Text("${result}", textAlign: TextAlign.center, style: TextStyle(color: textColor),)
                   ],
                 ),
               ),
