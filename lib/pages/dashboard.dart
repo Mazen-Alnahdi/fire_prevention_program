@@ -15,9 +15,9 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   int _currentIndex = 1;
-  Color backIcon = Colors.red;
-  Color selectIcon = Colors.orange;
-  Color backgroundColor = Colors.orange;
+  Color backIcon = Colors.white;
+  Color selectIcon = const Color.fromRGBO(255, 75, 0, 100);
+  Color backgroundColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +27,7 @@ class _DashBoardState extends State<DashBoard> {
       Info(),
     ];
 
+
     return Scaffold(
       body: Center(
         child: GestureDetector(
@@ -34,28 +35,30 @@ class _DashBoardState extends State<DashBoard> {
         ),
       ),
 
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: backgroundColor,
           items: <BottomNavigationBarItem> [
             BottomNavigationBarItem(
                 icon: const Icon(
-                    Icons.calculate),
+                    Icons.calculate_outlined),
                 label: "Calculate",
                 backgroundColor: backIcon),
             BottomNavigationBarItem(
                 icon: const Icon(
-                    Icons.home),
+                    Icons.home_outlined),
                 label: 'Home',
                 backgroundColor: backIcon),
             BottomNavigationBarItem(
                 icon: const Icon(
-                    Icons.info),
+                    Icons.info_outline),
                 label: "Info",
                 backgroundColor: backIcon),
           ],
         currentIndex: _currentIndex,
         selectedItemColor: selectIcon,
         onTap: _onItemTapped,
+
       ),
     );
   }
