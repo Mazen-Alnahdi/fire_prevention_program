@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 
-class Info extends StatefulWidget {
-  const Info({super.key});
+class Calc extends StatefulWidget {
+  const Calc({super.key});
 
   @override
-  State<Info> createState() => _InfoState();
+  State<Calc> createState() => _CalcState();
 }
 
-class _InfoState extends State<Info> {
+class _CalcState extends State<Calc> {
   final tempText=TextEditingController();
   final rhText=TextEditingController();
   final windText=TextEditingController();
