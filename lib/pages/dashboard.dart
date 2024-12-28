@@ -1,3 +1,4 @@
+import 'package:fire_program/pages/news.dart';
 import 'package:flutter/material.dart';
 
 import 'home.dart';
@@ -16,14 +17,15 @@ class _DashBoardState extends State<DashBoard> {
   Color backIcon = Colors.white;
   Color selectIcon = const Color.fromRGBO(255, 75, 0, 100);
   Color backgroundColor = Colors.white;
-  final PageController _pageController = PageController(); // PageController for smooth transitions
+  final PageController _pageController = PageController(initialPage: 1); // PageController for smooth transitions
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       const Calc(),
       const Home(),
-      const Info(),
+      // const Info(),
+      const News(),
     ];
 
     return Scaffold(
@@ -43,10 +45,6 @@ class _DashBoardState extends State<DashBoard> {
         visible: MediaQuery.of(context).viewInsets.bottom==0.0,
           child: FloatingActionButton(
             backgroundColor: Colors.white,
-            child: Icon(
-              Icons.home_outlined,
-              color: selectIcon,
-            ),
             onPressed: () {
               setState(() {
                 _currentIndex = 1; // Set to the Home page
@@ -56,6 +54,10 @@ class _DashBoardState extends State<DashBoard> {
                   curve: Curves.easeInOut);
             },
             shape: const CircleBorder(),
+            child: Icon(
+              Icons.home_outlined,
+              color: selectIcon,
+            ),
           ),
       ),
       bottomNavigationBar: BottomAppBar(

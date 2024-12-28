@@ -10,7 +10,9 @@ Future <void> main() async{
   runApp(MaterialApp(home: Main(),
   theme: ThemeData(
     fontFamily: GoogleFonts.openSans().fontFamily,
-  ),));
+  ),debugShowCheckedModeBanner: false,
+  )
+  );
 }
 
 class Main extends StatefulWidget {

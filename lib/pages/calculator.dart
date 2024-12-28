@@ -29,43 +29,81 @@ class _CalcState extends State<Calc> {
 
   void _setData() {
     setState(() {
-      tempData = double.tryParse(tempText.text.trim()) ?? 0.0;
-      rhData = double.tryParse(rhText.text.trim()) ?? 0.0;
-      windData = double.tryParse(windText.text.trim()) ?? 0.0;
-      rainData = double.tryParse(rainText.text.trim()) ?? 0.0;
-      latData = double.tryParse(latText.text.trim()) ?? 0.0;
+      tempData = _parseToDouble(tempText.text.trim());
+      rhData = _parseToDouble(rhText.text.trim());
+      windData = _parseToDouble(windText.text.trim());
+      rainData = _parseToDouble(rainText.text.trim());
+      latData = _parseToDouble(latText.text.trim());
+      print(tempData);
     });
   }
 
+  double _parseToDouble(String input) {
+    final parsedValue = num.tryParse(input); // Try parsing as num (can handle both int and double)
+    return parsedValue?.toDouble() ?? 0.0; // Convert to double or default to 0.0
+  }
+
   Widget buildInputField(String label, TextEditingController controller, String description) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: controller,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-              InputFormat(),
+    bool isDescriptionVisible = false; // Local state for toggling description
+
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18, // Adjusted for better visibility
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      isDescriptionVisible ? Icons.info : Icons.info_outline,
+                      color: Colors.orange, // Info icon color
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isDescriptionVisible = !isDescriptionVisible; // Toggle description visibility
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: controller,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
+                  InputFormat(),
+                ],
+                keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.black12, // Darker background color
+                  border: InputBorder.none, // Remove border
+                  enabledBorder: InputBorder.none, // Remove border when enabled
+                  focusedBorder: InputBorder.none, // Remove border when focused
+                ),
+              ),
+              const SizedBox(height: 8),
+              Visibility(
+                visible: isDescriptionVisible,
+                child: Text(
+                  description,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ],
-            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: const TextStyle(fontSize: 16),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -171,6 +209,7 @@ class _CalcState extends State<Calc> {
                           setState(() {
                             _setData();
                             FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
+                            print(FWI);
                             if (FWI! < 5.2) {
                               result = "Very Low Danger";
                             } else if (FWI! >= 5.2 && FWI! < 11.2) {

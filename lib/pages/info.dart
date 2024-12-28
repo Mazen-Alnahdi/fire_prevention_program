@@ -11,6 +11,7 @@ class _InfoState extends State<Info> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text('Fire Safety Tips'),
@@ -28,7 +29,7 @@ class _InfoState extends State<Info> {
                   children: [
                     Theme(
                         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                        child: Column(
+                        child: const Column(
                           children: [
                             // Fire Safety in a Workplace Section
                             ExpansionTile(
