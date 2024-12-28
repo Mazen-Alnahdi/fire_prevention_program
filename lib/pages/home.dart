@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 
 
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -265,27 +266,15 @@ class _HomeState extends State<Home> {
                           ],
                         )
                     ),
-
-
-
-                    // Text(
-                    //   'Selected Location:',
-                    //   style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-                    // ),
-                    // if (address != null)
-                    //   Text(
-                    //     'Address: $address',
-                    //     style: TextStyle(color: Colors.white70),
-                    //     textAlign: TextAlign.center,
-                    //   ),
-                    // Text("Temp: ${temp}, RH: ${rh}", style: TextStyle(color: textColor),),
-                    // Text("Wind: ${wind}, Rain: ${rain}", style: TextStyle(color: textColor),),
-                    // Text("Today's Probability of a Fire is",textAlign: TextAlign.center, style: TextStyle(color: textColor),),
-                    // Text("${result}", textAlign: TextAlign.center, style: TextStyle(color: textColor),)
                   ],
                 ),
               ),
             ),
+          IconButton(
+              onPressed: ()=>{
+
+              },
+              icon: Icon(Icons.map))
         ],
       ),
     );
