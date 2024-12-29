@@ -93,7 +93,7 @@ class _DashBoardState extends State<DashBoard> {
                     curve: Curves.easeInOut);
               },
               icon: Icon(
-                Icons.info_outline,
+                Icons.newspaper,
                 color: selectIcon,
               ),
             ),

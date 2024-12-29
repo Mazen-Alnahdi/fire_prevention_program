@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fire_program/pages/info.dart';
 import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -77,17 +78,15 @@ class _HomeState extends State<Home> {
 
           FWI = fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
           if (FWI! < 5.2) {
-            result = "Very Low Danger";
+            result = "خطر منخفض جدًا";
           } else if (FWI! >= 5.2 && FWI! < 11.2) {
-            result = "Low Danger";
+            result = "خطر منخفض";
           } else if (FWI! >= 11.2 && FWI! < 21.3) {
-            result = "Moderate Danger";
+            result = "خطر معتدل";
           } else if (FWI! >= 21.3 && FWI! < 38.0) {
-            result = "High Danger";
-          } else if (FWI! >= 38.0 && FWI! < 50) {
-            result = "Very High Danger";
-          } else {
-            result = "NO DATA GIVEN";
+            result = "خطر كبير";
+          } else if (FWI! >= 38.0) {
+            result = "خطر كبير جدًا";
           }
         });
       } else {
@@ -137,10 +136,20 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fire Detection'),
+        title: Text('كشف الحرائق'),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context)=>const Info())
+                );
+              },
+              icon: const Icon(Icons.info_outline))
+        ],
       ),
       body: Stack(
         children: [
@@ -192,7 +201,7 @@ class _HomeState extends State<Home> {
                   Expanded(
                     child: DropdownButton<Country>(
                       hint: const Text(
-                        "Select a Country",
+                        "اختر دولة",
                         style: TextStyle(
                           color: Colors.black, // Hint text color
                         ),
@@ -244,7 +253,7 @@ class _HomeState extends State<Home> {
                           children: [
                             if (address != null)
                               const Text(
-                                "Today's Probability of a Fire is",
+                                "احتمال نشوب حريق اليوم هو",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.black),
                                 softWrap: true, // Ensures the text wraps if it’s too long
@@ -269,7 +278,7 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "Temperature:\n${temp}\u00b0C",
+                                        "درجة حرارة:\n${temp}\u00b0C",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(color: Colors.black),
                                         softWrap: true,
@@ -280,7 +289,7 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "Humidity:\n${rh}%",
+                                        "رطوبة:\n${rh}%",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(color: Colors.black),
                                         softWrap: true,
@@ -296,7 +305,7 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "Wind:\n${wind}kph",
+                                        "رياح:\n${wind}kph",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(color: Colors.black),
                                         softWrap: true,
@@ -307,7 +316,7 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "Rain:\n${rain}mm",
+                                        "مطر:\n${rain}mm",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(color: Colors.black),
                                         softWrap: true,
@@ -320,7 +329,7 @@ class _HomeState extends State<Home> {
                               Center(
                                 child: ListTile(
                                   title: Text(
-                                    'Address: $address',
+                                    'عنوان: $address',
                                     style: TextStyle(color: Colors.black),
                                     textAlign: TextAlign.center,
                                     softWrap: true,
@@ -367,11 +376,11 @@ class _HomeState extends State<Home> {
 }
 
 List<Country> countries = [
-  Country(name: "Saint-Tropez, France", latitude: 43.2617, longitude: 6.64430),
-  Country(name: "Kaisariani Monastery, Greece", latitude: 37.9609, longitude: 23.78922),
-  Country(name: "Krasnoyarsk Krai, Russia", latitude: 63.9709, longitude: 94.93433),
-  Country(name: "Antalya, Turkey", latitude: 36.9388, longitude: 30.57424),
-  Country(name: "City of Cape Town, South Africa", latitude: -33.9467, longitude: 18.4288),
+  Country(name: "محمية صباح الأحمد الطبيعية", latitude: 29.5796, longitude: 47.8232),
+  Country(name: "محمية الشقايا", latitude: 29.3954, longitude: 47.5948),
+  Country(name: "محمية أم القرين", latitude: 29.2270, longitude: 47.8790),
+  Country(name: "محمية مبارك الكبير", latitude: 29.0471, longitude: 48.0253),
+  Country(name: "محمية الصليبية", latitude: 29.1750, longitude: 47.48166),
 ];
 
 List<DropdownMenuItem<Country>> getDropdownItems() {

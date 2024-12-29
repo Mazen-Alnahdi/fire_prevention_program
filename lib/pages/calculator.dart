@@ -56,13 +56,6 @@ class _CalcState extends State<Calc> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18, // Adjusted for better visibility
-                    ),
-                  ),
                   IconButton(
                     icon: Icon(
                       isDescriptionVisible ? Icons.info : Icons.info_outline,
@@ -74,6 +67,15 @@ class _CalcState extends State<Calc> {
                       });
                     },
                   ),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      // Adjusted for better visibility
+                    ),
+                  ),
+
                 ],
               ),
               const SizedBox(height: 8),
@@ -113,7 +115,7 @@ class _CalcState extends State<Calc> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fire Calculator"),
+        title: const Text("حاسبة النار"),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
@@ -126,36 +128,36 @@ class _CalcState extends State<Calc> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildInputField(
-                  "Temperature",
+                  "درجة حرارة",
                   tempText,
-                  "Temperature in Degrees Celsius is used in calculating the Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
+                  "تُستخدم درجة الحرارة بالدرجات المئوية في حساب كود رطوبة الوقود الدقيق، وكود رطوبة داف، وكود الجفاف",
                 ),
                 buildInputField(
-                  "Humidity",
+                  "رطوبة",
                   rhText,
-                  "Humidity in Percentage is the measure of water vapour in the air and is used in Fine Fuel Moisture Code (FFMC) and Duff Moisture Code (DMC)",
+                  "الرطوبة بالنسبة المئوية هي مقياس لبخار الماء في الهواء وتستخدم في رمز رطوبة الوقود الدقيق ورمز رطوبة داف",
                 ),
                 buildInputField(
-                  "Wind",
+                  "رياح",
                   windText,
-                  "Wind Speed in kph is used in Fine Fuel Moisture Code (FFMC) and Initial Spread Index (ISI)",
+                  "يتم استخدام سرعة الرياح بالكيلومتر في الساعة في كود رطوبة الوقود الدقيق ومؤشر الانتشار الأولي",
                 ),
                 buildInputField(
-                  "Rain",
+                  "مطر",
                   rainText,
-                  "Accumulated rainfall in mm as known as Precipitation is used for Fine Fuel Moisture Code (FFMC), Duff Moisture Code (DMC) and Drought Code (DC)",
+                  "يتم استخدام هطول الأمطار المتراكم بالملليمتر والمعروف باسم هطول الأمطار في كود رطوبة الوقود الدقيق، ورمز رطوبة داف، ورمز الجفاف",
                 ),
                 buildInputField(
-                  "Latitude",
+                  "خط العرض",
                   latText,
-                  "Latitude in decimal degrees of the location for which calculations are being made and used for Duff Moisture Code (DMC) and Drought Code (DC)",
+                  "خط العرض بالدرجات العشرية للموقع الذي يتم إجراء الحسابات له واستخدامه في رمز رطوبة داف وكود الجفاف",
                 ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "The Probability of a Fire is $result",
+                      "احتمال الحريق هو $result",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
@@ -211,20 +213,20 @@ class _CalcState extends State<Calc> {
                             FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
                             print(FWI);
                             if (FWI! < 5.2) {
-                              result = "Very Low Danger";
+                              result = "خطر منخفض جدًا";
                             } else if (FWI! >= 5.2 && FWI! < 11.2) {
-                              result = "Low Danger";
+                              result = "خطر منخفض";
                             } else if (FWI! >= 11.2 && FWI! < 21.3) {
-                              result = "Moderate Danger";
+                              result = "خطر معتدل";
                             } else if (FWI! >= 21.3 && FWI! < 38.0) {
-                              result = "High Danger";
+                              result = "خطر كبير";
                             } else if (FWI! >= 38.0) {
-                              result = "Very High Danger";
+                              result = "خطر كبير جدًا";
                             }
                           });
                         },
                         child: const Text(
-                          'CALCULATE',
+                          'الحساب',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

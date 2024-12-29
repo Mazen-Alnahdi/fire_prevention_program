@@ -14,10 +14,17 @@ class _InfoState extends State<Info> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Fire Safety Tips'),
+          title: Text('نصائح للسلامة من الحرائق'),
           backgroundColor: Colors.white,
           foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
           centerTitle: true,
+          leading:
+            IconButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back))
+
         ),
         body:
         Padding(padding: EdgeInsets.only(bottom: 65),
@@ -34,7 +41,7 @@ class _InfoState extends State<Info> {
                             // Fire Safety in a Workplace Section
                             ExpansionTile(
                               title: Text(
-                                "Fire Safety in a Workplace",
+                                "السلامة من الحرائق في مكان العمل",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -45,7 +52,7 @@ class _InfoState extends State<Info> {
                               children: [
                                 ExpansionTile(
                                   title: Text(
-                                    '1. Install Smoke Detectors',
+                                    '1. قم بتركيب أجهزة كشف الدخان',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -53,13 +60,13 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.smoke_free, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Ensure smoke detectors are installed on every floor and in high-risk areas like kitchens.')),
-                                    ListTile(title: Text('Test smoke detectors regularly to ensure they are working properly.')),
+                                    ListTile(title: Text('تأكد من تركيب أجهزة كشف الدخان في كل طابق وفي المناطق عالية الخطورة مثل المطابخ.')),
+                                    ListTile(title: Text('اختبر كاشفات الدخان بانتظام للتأكد من أنها تعمل بشكل صحيح.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '2. Maintain Electrical Systems',
+                                    '2. صيانة الأنظمة الكهربائية',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -67,13 +74,13 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.electric_car, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Check wiring for wear and tear, and avoid overloading circuits.')),
-                                    ListTile(title: Text('Ensure that only qualified personnel perform electrical maintenance.')),
+                                    ListTile(title: Text('افحص الأسلاك بحثًا عن البلى، وتجنب التحميل الزائد على الدوائر.')),
+                                    ListTile(title: Text('تأكد من أن الموظفين المؤهلين فقط هم من يقومون بأعمال الصيانة الكهربائية.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '3. Safe Storage of Flammable Materials',
+                                    '3. التخزين الآمن للمواد القابلة للاشتعال',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -81,13 +88,13 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.local_fire_department, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Store flammable liquids in well-ventilated areas and away from heat sources.')),
-                                    ListTile(title: Text('Keep flammable materials away from electrical equipment and open flames.')),
+                                    ListTile(title: Text('تخزين السوائل القابلة للاشتعال في مناطق جيدة التهوية وبعيداً عن مصادر الحرارة.')),
+                                    ListTile(title: Text('أبعد المواد القابلة للاشتعال عن الأجهزة الكهربائية وألسنة اللهب المكشوفة.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '4. Fire Extinguishers and Emergency Kits',
+                                    '4. طفايات الحريق ومعدات الطوارئ',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -95,14 +102,14 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.fire_extinguisher, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Place fire extinguishers in easily accessible areas.')),
-                                    ListTile(title: Text('Ensure employees are trained in how to use fire extinguishers.')),
-                                    ListTile(title: Text('Maintain a well-stocked emergency kit that includes fire safety tools.')),
+                                    ListTile(title: Text('ضع طفايات الحريق في الأماكن التي يسهل الوصول إليها.')),
+                                    ListTile(title: Text('التأكد من تدريب الموظفين على كيفية استخدام طفايات الحريق.')),
+                                    ListTile(title: Text('احتفظ بمجموعة طوارئ جيدة التجهيز تتضمن أدوات السلامة من الحرائق.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '5. Regular Fire Drills',
+                                    '5. تدريبات مكافحة الحرائق المنتظمة',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -110,13 +117,13 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.access_alarm, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Conduct regular fire drills to ensure employees know how to evacuate safely.')),
-                                    ListTile(title: Text('Ensure all escape routes are clearly marked and unobstructed.')),
+                                    ListTile(title: Text('قم بإجراء تدريبات منتظمة على الحرائق للتأكد من أن الموظفين يعرفون كيفية الإخلاء بأمان.')),
+                                    ListTile(title: Text('تأكد من أن جميع طرق الهروب محددة بوضوح وخالية من العوائق.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '6. Proper Handling of Cooking Equipment',
+                                    '6. التعامل السليم مع معدات الطبخ',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -124,8 +131,8 @@ class _InfoState extends State<Info> {
                                   ),
                                   leading: Icon(Icons.kitchen, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Do not leave cooking equipment unattended while in use.')),
-                                    ListTile(title: Text('Turn off all cooking appliances when not in use.')),
+                                    ListTile(title: Text('لا تترك معدات الطبخ دون مراقبة أثناء الاستخدام.')),
+                                    ListTile(title: Text('قم بإيقاف تشغيل جميع أجهزة الطهي عند عدم استخدامها.')),
                                   ],
                                 ),
                               ],
@@ -134,7 +141,7 @@ class _InfoState extends State<Info> {
                             // Fire Safety at Home Section
                             ExpansionTile(
                               title: Text(
-                                "Fire Safety at Home",
+                                "السلامة من الحرائق في المنزل",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -146,74 +153,74 @@ class _InfoState extends State<Info> {
                               children: [
                                 ExpansionTile(
                                   title: Text(
-                                    '1. Install Smoke and Carbon Monoxide Detectors',
+                                    '1. قم بتركيب أجهزة كشف الدخان وأول أكسيد الكربون',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.smoke_free, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Install detectors on every level of your home and inside sleeping areas.')),
-                                    ListTile(title: Text('Test detectors monthly and change the batteries regularly.')),
+                                    ListTile(title: Text('قم بتركيب أجهزة الكشف في كل مستوى من منزلك وداخل مناطق النوم.')),
+                                    ListTile(title: Text('اختبار أجهزة الكشف شهريا وتغيير البطاريات بانتظام.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '2. Maintain Electrical Safety',
+                                    '2. الحفاظ على السلامة الكهربائية',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.electric_car, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Inspect electrical appliances and cords for damage.')),
-                                    ListTile(title: Text('Avoid overloading electrical outlets.')),
+                                    ListTile(title: Text('فحص الأجهزة والأسلاك الكهربائية بحثاً عن أي ضرر.')),
+                                    ListTile(title: Text('تجنب التحميل الزائد على المنافذ الكهربائية.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '3. Keep Flammable Items Away from Heat Sources',
+                                    '3. أبعد المواد القابلة للاشتعال عن مصادر الحرارة',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.local_fire_department, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Store matches, lighters, and other flammable items in a safe place.')),
-                                    ListTile(title: Text('Keep paper, clothing, and other flammable materials away from space heaters.')),
+                                    ListTile(title: Text('قم بتخزين أعواد الثقاب والولاعات وغيرها من المواد القابلة للاشتعال في مكان آمن.')),
+                                    ListTile(title: Text('احتفظ بالورق والملابس والمواد الأخرى القابلة للاشتعال بعيدًا عن المدافئ.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '4. Create and Practice a Fire Escape Plan',
+                                    '4. إنشاء وممارسة خطة الهروب من الحريق',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.access_alarm, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Ensure all family members know how to escape safely from every room.')),
-                                    ListTile(title: Text('Practice escape routes regularly, and identify a meeting spot outside.')),
+                                    ListTile(title: Text('تأكد من أن جميع أفراد الأسرة يعرفون كيفية الهروب بأمان من كل غرفة.')),
+                                    ListTile(title: Text('تدرب على طرق الهروب بانتظام، وحدد مكانًا للاجتماع بالخارج.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '5. Use Fire-Resistant Materials for Furnishings',
+                                    '5. استخدم مواد مقاومة للحريق للمفروشات',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.chair, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Consider fire-resistant furniture or upholstery for your home.')),
-                                    ListTile(title: Text('Use fire-resistant window coverings, especially in kitchens or near heating devices.')),
+                                    ListTile(title: Text('فكر في الأثاث أو المفروشات المقاومة للحريق لمنزلك.')),
+                                    ListTile(title: Text('استخدم أغطية النوافذ المقاومة للحريق، خاصة في المطابخ أو بالقرب من أجهزة التدفئة.')),
                                   ],
                                 ),
                                 ExpansionTile(
                                   title: Text(
-                                    '6. Keep a Fire Extinguisher in the Kitchen',
+                                    '6. احتفظ بمطفأة حريق في المطبخ',
                                     style: TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.bold,),
                                   ),
                                   leading: Icon(Icons.fire_extinguisher, color: Colors.orange),
                                   children: [
-                                    ListTile(title: Text('Place a fire extinguisher in a location that is easy to access, especially near the kitchen.')),
-                                    ListTile(title: Text('Know how to use the fire extinguisher correctly in case of an emergency.')),
+                                    ListTile(title: Text('ضع طفاية الحريق في مكان يسهل الوصول إليه، خاصة بالقرب من المطبخ.')),
+                                    ListTile(title: Text('معرفة كيفية استخدام طفاية الحريق بشكل صحيح في حالة الطوارئ.')),
                                   ],
                                 ),
                               ],
