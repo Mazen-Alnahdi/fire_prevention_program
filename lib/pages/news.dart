@@ -27,7 +27,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
     fetchFWIHeatMap(); // Fetch image URL during initialization
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     )..addListener(() {
       controller.value = animation!.value;
     });

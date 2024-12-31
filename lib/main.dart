@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 Future <void> main() async{
   await dotenv.load(fileName: '.env');
 
-  runApp(MaterialApp(home: Main(),
+  runApp(MaterialApp(home: const Main(),
   theme: ThemeData(
     fontFamily: GoogleFonts.openSans().fontFamily,
   ),debugShowCheckedModeBanner: false,
@@ -25,7 +25,6 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
-  late Animation<Color?> _colorAnimation;
   Color loadColor = Colors.red;
 
   @override

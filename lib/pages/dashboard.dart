@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'calculator.dart';
-import 'info.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});

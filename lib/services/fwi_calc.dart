@@ -2,7 +2,7 @@ import 'dart:math';
 
 class FireWeatherIndex {
   double _calcFFMC(double temp, double rh, double wind, double rain) {
-    double mo, rf, mr, ed, ew, ko, kd, kl, kw, m, F;
+    double mo, rf, mr, ed, ew, ko, kd, kl, kw, m;
     double ffmcPrev = 0;
 
     // Calculate initial mo value

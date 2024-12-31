@@ -136,7 +136,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('كشف الحرائق'),
+        title: const Text('كشف الحرائق'),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
@@ -156,7 +156,7 @@ class _HomeState extends State<Home> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: LatLng(29.3757, 47.9773), // Default to Kuwait City
+              initialCenter: const LatLng(29.3757, 47.9773), // Default to Kuwait City
               initialZoom: 13.0,
               onTap: (tapPosition, point) async {
                 setState(() {
@@ -168,7 +168,7 @@ class _HomeState extends State<Home> {
             children: [
               TileLayer(
                 urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
+                subdomains: const ['a', 'b', 'c'],
               ),
               if (selectedLocation != null)
                 MarkerLayer(
@@ -196,12 +196,20 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(5), // Optional: Rounded corners
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Keep spacing consistent
                 children: [
+                  // Icon(
+                  //   Icons.arrow_drop_down,
+                  //   color: Colors.black, // Dropdown arrow icon color
+                  // ),
                   Expanded(
                     child: DropdownButton<Country>(
+                      isExpanded: true, // Ensures the dropdown stretches to fit the text alignment
+                      alignment: Alignment.centerRight, // Aligns text to the right
                       hint: const Text(
                         "اختر دولة",
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
                         style: TextStyle(
                           color: Colors.black, // Hint text color
                         ),
@@ -219,15 +227,18 @@ class _HomeState extends State<Home> {
                       dropdownColor: Colors.orange, // Dropdown menu background color
                       style: const TextStyle(
                         color: Colors.black, // Text color for selected and dropdown items
+                        // textAlign: TextAlign.right, // Aligns text to the right
                       ),
-                      iconEnabledColor: Colors.orange, // Dropdown arrow icon color
                       underline: Container(), // Removes the default underline
+                      icon: const Icon(
+                        Icons.arrow_drop_down, // Custom icon
+                        color: Colors.black, // Dropdown arrow icon color
+                      ),
+                      iconSize: 24, // Size of the icon
                     ),
+
                   ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black, // Icon color
-                  ),
+
                 ],
               ),
             ),
@@ -261,7 +272,7 @@ class _HomeState extends State<Home> {
                             Text(
                               "$result",
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black),
                               softWrap: true, // Ensures the text wraps if it’s too long
                               overflow: TextOverflow.visible, // Prevents text overflow
                             ),
@@ -278,9 +289,9 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "درجة حرارة:\n${temp}\u00b0C",
+                                        "درجة الحرارة\n${temp}\u00b0C",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.black),
+                                        style: const TextStyle(color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -289,9 +300,9 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "رطوبة:\n${rh}%",
+                                        "رطوبة\n${rh}%",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.black),
+                                        style: const TextStyle(color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -305,9 +316,9 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "رياح:\n${wind}kph",
+                                        "رياح\n${wind}kph",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.black),
+                                        style: const TextStyle(color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -316,9 +327,9 @@ class _HomeState extends State<Home> {
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
-                                        "مطر:\n${rain}mm",
+                                        "مطر\n${rain}mm",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.black),
+                                        style: const TextStyle(color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -329,8 +340,8 @@ class _HomeState extends State<Home> {
                               Center(
                                 child: ListTile(
                                   title: Text(
-                                    'عنوان: $address',
-                                    style: TextStyle(color: Colors.black),
+                                    'العنوان: $address',
+                                    style: const TextStyle(color: Colors.black),
                                     textAlign: TextAlign.center,
                                     softWrap: true,
                                     overflow: TextOverflow.visible,
@@ -382,12 +393,21 @@ List<Country> countries = [
   Country(name: "محمية مبارك الكبير", latitude: 29.0471, longitude: 48.0253),
   Country(name: "محمية الصليبية", latitude: 29.1750, longitude: 47.48166),
 ];
-
 List<DropdownMenuItem<Country>> getDropdownItems() {
   return countries.map((Country country) {
     return DropdownMenuItem<Country>(
       value: country,
-      child: Text(country.name),
+      child: Align(
+        alignment: Alignment.centerRight, // Align the child widget to the right
+        child: Text(
+          country.name,
+          textAlign: TextAlign.right, // Align the text to the right
+          textDirection: TextDirection.rtl, // Ensure proper text direction for Arabic
+          style: const TextStyle(
+            color: Colors.black, // Text color
+          ),
+        ),
+      ),
     );
   }).toList();
 }
