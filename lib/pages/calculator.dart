@@ -4,6 +4,8 @@ import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'info.dart';
+
 class Calc extends StatefulWidget {
   const Calc({super.key});
 
@@ -44,7 +46,14 @@ class _CalcState extends State<Calc> {
     return parsedValue?.toDouble() ?? 0.0; // Convert to double or default to 0.0
   }
 
-  Widget buildInputField(String label, TextEditingController controller, String description) {
+  Widget buildInputField(
+      String label,
+      TextEditingController controller,
+      String description,
+      String helper,
+      double min,
+      double max,
+      bool negative) {
     bool isDescriptionVisible = false; // Local state for toggling description
 
     return StatefulBuilder(
@@ -83,11 +92,19 @@ class _CalcState extends State<Calc> {
               TextField(
                 controller: controller,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                  InputFormat(),
+                  // FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
+                  InputFormat(min:min,max: max, negative:negative),
                 ],
-                keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
-                decoration: const InputDecoration(
+                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: negative),
+                decoration: InputDecoration(
+                  helper:  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      helper,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
                   filled: true,
                   fillColor: Colors.black12, // Darker background color
                   border: InputBorder.none, // Remove border
@@ -119,6 +136,16 @@ class _CalcState extends State<Calc> {
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
+        actions: [
+        IconButton(
+            onPressed: (){
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context)=>const Info())
+              );
+            },
+            icon: const Icon(Icons.info_outline))
+      ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 65),
@@ -152,7 +179,7 @@ class _CalcState extends State<Calc> {
                       },
                     ),
                     const Text(
-                      "درجة حرارة",
+                      "(\u00b0C )درجة حرارة",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -170,6 +197,15 @@ class _CalcState extends State<Calc> {
                   ],
                   keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                   decoration: const InputDecoration(
+                    helper:  Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        '-100 to 100',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+
                     filled: true,
                     fillColor: Colors.black12, // Darker background color
                     border: InputBorder.none, // Remove border
@@ -193,24 +229,40 @@ class _CalcState extends State<Calc> {
 
 
                 buildInputField(
-                  "رطوبة",
+                  "(%)رطوبة",
                   rhText,
                   "الرطوبة بالنسبة المئوية هي مقياس لبخار الماء في الهواء وتستخدم في رمز رطوبة الوقود الدقيق ورمز رطوبة داف",
+                  "0-100",
+                  0,
+                  100,
+                  false
                 ),
                 buildInputField(
-                  "رياح",
+                  "(kph)رياح",
                   windText,
                   "يتم استخدام سرعة الرياح بالكيلومتر في الساعة في كود رطوبة الوقود الدقيق ومؤشر الانتشار الأولي",
+                  "0-118",
+                  0,
+                  118,
+                  false
                 ),
                 buildInputField(
-                  "مطر",
+                  "(mm)مطر",
                   rainText,
                   "يتم استخدام هطول الأمطار المتراكم بالملليمتر والمعروف باسم هطول الأمطار في كود رطوبة الوقود الدقيق، ورمز رطوبة داف، ورمز الجفاف",
+                  "0-100",
+                  0,
+                  100,
+                  false
                 ),
                 buildInputField(
-                  "خط العرض",
+                  "(\u00b0)خط العرض",
                   latText,
                   "خط العرض بالدرجات العشرية للموقع الذي يتم إجراء الحسابات له واستخدامه في رمز رطوبة داف وكود الجفاف",
+                  "-90 to 90",
+                  -90,
+                  90,
+                  true
                 ),
                 const SizedBox(height: 20),
                 Row(

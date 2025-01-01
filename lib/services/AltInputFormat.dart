@@ -11,17 +11,31 @@ class AltInputFormat extends TextInputFormatter {
       return newValue;
     }
 
-    // Validate the text
-    final regex = RegExp(r'^[-+]?\d*\.?\d*$');
+    // Regex to allow negative or positive numbers with decimals
+    final regex = RegExp(r'^-?\d*\.?\d*$');
     if (regex.hasMatch(text)) {
-      // Ensure only one sign at the beginning and one decimal dot
-      if (text.indexOf('-') > 0 || text.indexOf('+') > 0 || text.indexOf('.') != text.lastIndexOf('.')) {
-        return oldValue; // Revert to the previous value
+      // Check for only one sign at the beginning and one decimal point
+      if (
+          text.indexOf('-') > 0 ||
+          text.indexOf('+') > 1 ||
+          text.indexOf('.') != text.lastIndexOf('.')) {
+        return oldValue; // Revert to the previous value if invalid sign or dot usage
       }
-      return newValue;
+
+      // Parse the value as a double to check the range
+      final numValue = double.tryParse(text);
+
+      // If the parsed value is valid and within the allowed range, return the new value
+      if (numValue == null ) {
+        return newValue;
+
+      }
+      if(numValue >= -100 && numValue <= 100){
+        return newValue;
+      }
     }
 
-    // If the input doesn't match, revert to the previous value
+    // If input is invalid or out of range, return the old value
     return oldValue;
   }
 }
