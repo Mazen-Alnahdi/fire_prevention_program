@@ -31,14 +31,15 @@ class _HomeState extends State<Home> {
   FireWeatherIndex fwi = new FireWeatherIndex();
   String result = "";
   MapController _mapController = MapController();
-  Country? selectedCountry;
+  Country? selectedCountry= countries.isNotEmpty ? countries[0] : null;
 
   final String key = dotenv.env["API_KEY"]!;
+  final String user_agent = dotenv.env["USER_AGENT"]!;
 
   Future<void> fetchAddressFromCoordinates(LatLng coords) async {
     final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json');
-    String user_agent = dotenv.env["USER_AGENT"]!;
+
     final response = await http.get(url, headers: {
       'User-Agent': user_agent // Nominatim requires this
     });
@@ -62,19 +63,12 @@ class _HomeState extends State<Home> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
+
         setState(() {
-          temp = (data['current']['temp_c'] is int)
-              ? (data['current']['temp_c'] as int).toDouble()
-              : data['current']['temp_c'];
-          rh = (data['current']['humidity'] is int)
-              ? (data['current']['humidity'] as int).toDouble()
-              : data['current']['humidity'];
-          wind = (data['current']['wind_kph'] is int)
-              ? (data['current']['wind_kph'] as int).toDouble()
-              : data['current']['wind_kph'];
-          rain = (data['current']['precip_mm'] is int)
-              ? (data['current']['precip_mm'] as int).toDouble()
-              : data['current']['precip_mm'];
+          temp = (data['current']['temp_c'] as num).toDouble();
+          rh = (data['current']['humidity'] as num).toDouble();
+          wind = (data['current']['wind_kph'] as num).toDouble();
+          rain = (data['current']['precip_mm'] as num).toDouble();
 
           FWI = fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
           if (FWI! < 5.2) {

@@ -2,7 +2,7 @@ import 'dart:math';
 
 class FireWeatherIndex {
   double _calcFFMC(double temp, double rh, double wind, double rain) {
-    double mo, rf, mr, ed, ew, ko, kd, kl, kw, m;
+    double mo, rf, mr, ed, ew, ko, kd, kl, kw, m, F;
     double ffmcPrev = 0;
 
     // Calculate initial mo value
@@ -102,96 +102,96 @@ class FireWeatherIndex {
     return dmcPrev + 100 * k;
   }
 
- double _calcDC(double temp, double rain, int month, double lat) {
-   double rd = 0.0, qo, qr, v, d, dr, lf;
-   double dcPrev = 200;
+  double _calcDC(double temp, double rain, int month, double lat) {
+    double rd = 0.0, qo, qr, v, d, dr, lf;
+    double dcPrev = 200;
 
-   // Rainfall adjustment
-   if (rain > 2.8) {
-     rd = 0.83 * rain - 1.27; // Formula for effective rainfall
-     qo = 800 * exp(-dcPrev / 400); // Initial moisture content
-     qr = qo + 3.937 * rd; // Adjusted moisture content
-     dr = 400 * log(800 / qr); // Adjusted DC value
+    // Rainfall adjustment
+    if (rain > 2.8) {
+      rd = 0.83 * rain - 1.27; // Formula for effective rainfall
+      qo = 800 * exp(-dcPrev / 400); // Initial moisture content
+      qr = qo + 3.937 * rd; // Adjusted moisture content
+      dr = 400 * log(800 / qr); // Adjusted DC value
 
-     // Update DCPrev based on Dr
-     dcPrev = dr > 0 ? dr : 0;
-   }
+      // Update DCPrev based on Dr
+      dcPrev = dr > 0 ? dr : 0;
+    }
 
-   // Calculate day length factor
-   lf = _dayLengthFactor(lat, month - 1);
+    // Calculate day length factor
+    lf = _dayLengthFactor(lat, month - 1);
 
-   // Adjust for temperature
-   if (temp > -2.8) {
-     v = 0.36 * (temp + 2.8) + lf; // Formula for moisture change
-   } else {
-     v = lf;
-   }
+    // Adjust for temperature
+    if (temp > -2.8) {
+      v = 0.36 * (temp + 2.8) + lf; // Formula for moisture change
+    } else {
+      v = lf;
+    }
 
-   // Ensure V is non-negative
-   if (v < 0) {
-     v = 0;
-   }
+    // Ensure V is non-negative
+    if (v < 0) {
+      v = 0;
+    }
 
-   // Calculate final DC
-   d = dcPrev + 0.5 * v;
+    // Calculate final DC
+    d = dcPrev + 0.5 * v;
 
-   return d;
- }
+    return d;
+  }
 
- double _calcISI(double wind, double ffmc){
-   // Calculate fWIND
-   double fWind = exp(0.05039 * wind);
+  double _calcISI(double wind, double ffmc){
+    // Calculate fWIND
+    double fWind = exp(0.05039 * wind);
 
-   // Calculate m
-   double m = 147.2 * (101 - ffmc) / (59.5 + ffmc);
+    // Calculate m
+    double m = 147.2 * (101 - ffmc) / (59.5 + ffmc);
 
-   // Calculate fF
-   double fF = 91.9 * exp(-0.1386 * m) * (1 + pow(m, 5.31) / 49300000);
+    // Calculate fF
+    double fF = 91.9 * exp(-0.1386 * m) * (1 + pow(m, 5.31) / 49300000);
 
-   // Calculate ISI
-   double isiValue = 0.208 * fWind * fF;
+    // Calculate ISI
+    double isiValue = 0.208 * fWind * fF;
 
-   return isiValue;
- }
+    return isiValue;
+  }
 
- double _calcBUI(double dmc, double dc){
-   double u;
+  double _calcBUI(double dmc, double dc){
+    double u;
 
-   if (dmc <= 0.4 * dc) {
-     u = 0.8 * dmc * dc / (dmc + 0.4 * dc);
-   } else {
-     u = dmc -
-         (1 - 0.8 * dc / (dmc + 0.4 * dc)) *
-             (0.92 + pow(0.0114 * dmc, 1.7));
-   }
+    if (dmc <= 0.4 * dc) {
+      u = 0.8 * dmc * dc / (dmc + 0.4 * dc);
+    } else {
+      u = dmc -
+          (1 - 0.8 * dc / (dmc + 0.4 * dc)) *
+              (0.92 + pow(0.0114 * dmc, 1.7));
+    }
 
-   return u;
- }
+    return u;
+  }
 
- double _calcFWI(double isi, double bui){
-   double fD, b, s;
+  double _calcFWI(double isi, double bui){
+    double fD, b, s;
 
-   // Calculate fD based on BUI
-   if (bui <= 80) {
-     fD = 0.626 * pow(bui, 0.809) + 2; // Equation 28a
-   } else {
-     fD = 1000 / (25 + 108.64 * exp(-0.023 * bui)); // Equation 28b
-   }
+    // Calculate fD based on BUI
+    if (bui <= 80) {
+      fD = 0.626 * pow(bui, 0.809) + 2; // Equation 28a
+    } else {
+      fD = 1000 / (25 + 108.64 * exp(-0.023 * bui)); // Equation 28b
+    }
 
-   // Calculate B
-   b = 0.1 * isi * fD; // Equation 29
+    // Calculate B
+    b = 0.1 * isi * fD; // Equation 29
 
-   // Calculate S
-   if (b > 1) {
-     s = exp(2.72 * pow(0.434 * log(b), 0.647)); // Equation 30a
-   } else {
-     s = b; // Equation 30b
-   }
+    // Calculate S
+    if (b > 1) {
+      s = exp(2.72 * pow(0.434 * log(b), 0.647)); // Equation 30a
+    } else {
+      s = b; // Equation 30b
+    }
 
-   return s; // FWI value
- }
+    return s; // FWI value
+  }
 
- double calcFWI(double temp, double rh, double wind, double rain, double lat){
+  double calcFWI(double temp, double rh, double wind, double rain, double lat){
     double FFMC=_calcFFMC(temp, rh, wind, rain);
     double DMC=_calcDMC(temp, rh, rain, lat);
     int month=_currentMonth();
@@ -201,13 +201,13 @@ class FireWeatherIndex {
     double FWI = _calcFWI(ISI, BUI);
 
     return FWI;
- }
+  }
 
- int _currentMonth(){
-   DateTime now=DateTime.now();
-   int month = now.month;
-   return month;
- }
+  int _currentMonth(){
+    DateTime now=DateTime.now();
+    int month = now.month;
+    return month;
+  }
 
   double _dayLength(double latitude, int month) {
     // Day Length arrays for different latitude ranges
@@ -236,6 +236,10 @@ class FireWeatherIndex {
 
   double _dayLengthFactor(double latitude, int month) {
     // Day Length Factor arrays for Northern and Southern Hemispheres
+    if(month==0){
+      month=1;
+    }
+
     List<double> lfN = [-1.6, -1.6, -1.6, 0.9, 3.8, 5.8, 6.4, 5.0, 2.4, 0.4, -1.6, -1.6];
     List<double> lfS = [6.4, 5.0, 2.4, 0.4, -1.6, -1.6, -1.6, -1.6, -1.6, 0.9, 3.8, 5.8];
 

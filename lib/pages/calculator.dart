@@ -4,6 +4,7 @@ import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../model/infoDialog.dart';
 import 'info.dart';
 
 class Calc extends StatefulWidget {
@@ -132,6 +133,7 @@ class _CalcState extends State<Calc> {
 
     return Scaffold(
       appBar: AppBar(
+        // Fire Weather Index
         title: const Text("حاسبة النار"),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
@@ -154,11 +156,6 @@ class _CalcState extends State<Calc> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // buildInputField(
-                //   "درجة حرارة",
-                //   tempText,
-                //   "تُستخدم درجة الحرارة بالدرجات المئوية في حساب كود رطوبة الوقود الدقيق، وكود رطوبة داف، وكود الجفاف",
-                // ),
             Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
@@ -179,6 +176,7 @@ class _CalcState extends State<Calc> {
                       },
                     ),
                     const Text(
+                      // Temperature
                       "(\u00b0C )درجة حرارة",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -224,11 +222,8 @@ class _CalcState extends State<Calc> {
               ],
             ),
           ),
-
-
-
-
                 buildInputField(
+                  // Humidity
                   "(%)رطوبة",
                   rhText,
                   "الرطوبة بالنسبة المئوية هي مقياس لبخار الماء في الهواء وتستخدم في رمز رطوبة الوقود الدقيق ورمز رطوبة داف",
@@ -238,6 +233,7 @@ class _CalcState extends State<Calc> {
                   false
                 ),
                 buildInputField(
+                  // Wind
                   "(kph)رياح",
                   windText,
                   "يتم استخدام سرعة الرياح بالكيلومتر في الساعة في كود رطوبة الوقود الدقيق ومؤشر الانتشار الأولي",
@@ -247,6 +243,7 @@ class _CalcState extends State<Calc> {
                   false
                 ),
                 buildInputField(
+                  // Rain / Precipitation
                   "(mm)مطر",
                   rainText,
                   "يتم استخدام هطول الأمطار المتراكم بالملليمتر والمعروف باسم هطول الأمطار في كود رطوبة الوقود الدقيق، ورمز رطوبة داف، ورمز الجفاف",
@@ -256,6 +253,7 @@ class _CalcState extends State<Calc> {
                   false
                 ),
                 buildInputField(
+                  // Latitude
                   "(\u00b0)خط العرض",
                   latText,
                   "خط العرض بالدرجات العشرية للموقع الذي يتم إجراء الحسابات له واستخدامه في رمز رطوبة داف وكود الجفاف",
@@ -269,6 +267,7 @@ class _CalcState extends State<Calc> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
+                      // Fire Weather Index
                       "احتمال الحريق $result",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -281,72 +280,152 @@ class _CalcState extends State<Calc> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                                (Set<WidgetState> states) {
-                              if (states.contains(WidgetState.hovered)) {
-                                return Colors.orangeAccent.withOpacity(0.8);
-                              } else if (states.contains(WidgetState.pressed)) {
-                                return Colors.deepOrange;
-                              }
-                              return Colors.orange;
-                            },
-                          ),
-                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                          overlayColor: WidgetStateProperty.all<Color>(
-                            Colors.orangeAccent.withOpacity(0.2),
-                          ),
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
+                    SizedBox(width: 10,),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.hovered)) {
+                                  return Colors.orangeAccent.withOpacity(0.8);
+                                } else if (states.contains(WidgetState.pressed)) {
+                                  return Colors.deepOrange;
+                                }
+                                return Colors.orange;
+                              },
+                            ),
+                            foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                            overlayColor: WidgetStateProperty.all<Color>(
+                              Colors.orangeAccent.withOpacity(0.2),
+                            ),
+                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            padding: WidgetStateProperty.all<EdgeInsets>(
+                              const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                            ),
+                            minimumSize: WidgetStateProperty.all<Size>(
+                              const Size(200, 50),
+                            ),
+                            elevation: WidgetStateProperty.resolveWith<double>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.pressed)) {
+                                  return 6;
+                                }
+                                return 3;
+                              },
                             ),
                           ),
-                          padding: WidgetStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                          ),
-                          minimumSize: WidgetStateProperty.all<Size>(
-                            const Size(200, 50),
-                          ),
-                          elevation: WidgetStateProperty.resolveWith<double>(
-                                (Set<WidgetState> states) {
-                              if (states.contains(WidgetState.pressed)) {
-                                return 6;
+                          onPressed: () {
+                            setState(() {
+                              _setData();
+                              FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
+                              if (FWI! < 5.2) {
+                                result = "هو خطر منخفض جدًا";
+                              } else if (FWI! >= 5.2 && FWI! < 11.2) {
+                                result = "هو خطر منخفض";
+                              } else if (FWI! >= 11.2 && FWI! < 21.3) {
+                                result = "هو خطر معتدل";
+                              } else if (FWI! >= 21.3 && FWI! < 38.0) {
+                                result = "هو خطر كبير";
+                              } else if (FWI! >= 38.0) {
+                                result = "هو خطر كبير جدًا";
                               }
-                              return 3;
-                            },
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _setData();
-                            FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
-                            if (FWI! < 5.2) {
-                              result = "هو خطر منخفض جدًا";
-                            } else if (FWI! >= 5.2 && FWI! < 11.2) {
-                              result = "هو خطر منخفض";
-                            } else if (FWI! >= 11.2 && FWI! < 21.3) {
-                              result = "هو خطر معتدل";
-                            } else if (FWI! >= 21.3 && FWI! < 38.0) {
-                              result = "هو خطر كبير";
-                            } else if (FWI! >= 38.0) {
-                              result = "هو خطر كبير جدًا";
-                            }
-                          });
-                        },
-                        child: const Text(
-                          'الحساب',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            });
+                          },
+                          child: const Text(
+                            'الحساب',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
+                    SizedBox(width: 10,),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child:TextButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.hovered)) {
+                                  return Colors.orangeAccent.withOpacity(0.8);
+                                } else if (states.contains(WidgetState.pressed)) {
+                                  return Colors.deepOrange;
+                                }
+                                return Colors.orange;
+                              },
+                            ),
+                            foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                            overlayColor: WidgetStateProperty.all<Color>(
+                              Colors.orangeAccent.withOpacity(0.2),
+                            ),
+                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            padding: WidgetStateProperty.all<EdgeInsets>(
+                              const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                            ),
+                            minimumSize: WidgetStateProperty.all<Size>(
+                              const Size(200, 50),
+                            ),
+                            elevation: WidgetStateProperty.resolveWith<double>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.pressed)) {
+                                  return 6;
+                                }
+                                return 3;
+                              },
+                            ),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return InfoDialog(fwi: FWI ?? 0.0);
+                                });
+                          },
+                          child: const Text(
+                            'عرض المعلومات',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                        // ElevatedButton(
+                        //     onPressed: () {
+                        //       showDialog(
+                        //           context: context,
+                        //           builder: (context) {
+                        //             return InfoDialog(fwi: FWI ?? 0.0);
+                        //           });
+                        //     }, child: const Text(
+                        //   'عرض المعلومات',
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // ),
+                      ),
+
+                    ),
+                    SizedBox(width: 10,),
                   ],
+
                 ),
+
               ],
             ),
           ),
