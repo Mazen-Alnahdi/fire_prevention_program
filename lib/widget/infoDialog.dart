@@ -16,80 +16,43 @@ class InfoDialog extends StatelessWidget {
     double dialogWidth = MediaQuery.of(context).size.width * 0.8;
 
     String lowFWI =
-        "When the Fire Weather Index is low, there is little chance that a wildfire will start and spread. Cool temperatures, high humidity, little to no wind, and little precipitation make it extremely unlikely for a fire to start and, if it does, easy to put out. To reduce the fire weather index and the likelihood of a wildfire, it is advised to apply Intumescent Coatings, Boron Retardants, or Gel Retardants. ";
+        "عندما يكون مؤشر الطقس الحرائق منخفضًا، هناك فرصة ضئيلة لاندلاع حريق وغالبًا ما يكون من السهل إطفاؤه. درجات الحرارة الباردة، الرطوبة العالية، الرياح الخفيفة أو العدم، بالإضافة إلى القليل من الأمطار، تجعل من غير المحتمل أن يبدأ حريق، وإذا حدث، يكون من السهل إخماده. لتقليل مؤشر الطقس الحرائق، يوصى باستخدام الطلاءات المنتفخة، المثبطات البورونية، أو المثبطات الهلامية.";
 
     String medFWI=
-        "The Fire weather index is medium, indicating that the fire risk is moderate, with an increased risk of ignition and spread due to warmer temperatures, moderate humidity, stronger winds, and drying periods. Intumescet coating, gel retardants, and commercial retardants are all appropriate coatings to use to reduce the risk of fire. ";
+        "عندما يكون مؤشر الطقس الحرائق متوسطًا، فإن خطر الحريق معتدل، مع زيادة في خطر الاشتعال والانتشار بسبب درجات الحرارة الدافئة، والرطوبة المعتدلة، والرياح القوية، وفترات الجفاف. الطلاءات المنتفخة، المثبطات الهلامية، والمثبطات التجارية هي الطلاءات المناسبة لتقليل خطر الحريق.";
 
     String highFWI =
-        "With a high fire weather index, the fire is more likely to start, spread quickly, and become uncontrollable because of the hot weather, low humidity, strong winds, and extended dryness. Using commercial retardants, gel retardants, or intumescent coating is advised to lessen the chance of a wildfire in the area.";
+        "عندما يكون مؤشر الطقس الحرائق مرتفعًا، فإن الحريق من المرجح أن يبدأ بسرعة، وينتشر بسرعة، ويصبح خارج عن السيطرة بسبب الطقس الحار، الرطوبة المنخفضة، الرياح القوية، والجفاف الممتد. يوصى باستخدام المثبطات التجارية، المثبطات الهلامية، أو الطلاء المنتفخ لتقليل خطر حدوث حريق.";
+
     String result = "";
-    String bodyText="";
+    String bodyText = "";
 
-    Color selectedColor= Colors.white;
-    Color low=Colors.green;
-    Color med=Colors.orange;
-    Color high=Colors.red;
-
+    Color selectedColor = Colors.white;
+    Color low = Colors.green;
+    Color med = Colors.orange;
+    Color high = Colors.red;
 
     if (fwi < 5.2) {
       result = "هو خطر منخفض جدًا";
-      bodyText=lowFWI;
-      selectedColor=low;
+      bodyText = lowFWI;
+      selectedColor = low;
     } else if (fwi >= 5.2 && fwi < 11.2) {
       result = "هو خطر منخفض";
-      bodyText=lowFWI;
-      selectedColor=low;
+      bodyText = lowFWI;
+      selectedColor = low;
     } else if (fwi >= 11.2 && fwi < 21.3) {
       result = "هو خطر معتدل";
-      bodyText=medFWI;
-      selectedColor=med;
+      bodyText = medFWI;
+      selectedColor = med;
     } else if (fwi >= 21.3 && fwi < 38.0) {
       result = "هو خطر كبير";
-      bodyText=highFWI;
-      selectedColor=high;
+      bodyText = highFWI;
+      selectedColor = high;
     } else if (fwi >= 38.0) {
       result = "هو خطر كبير جدًا";
-      bodyText=highFWI;
-      selectedColor=high;
+      bodyText = highFWI;
+      selectedColor = high;
     }
-
-
-    // return Dialog(
-    //   alignment: Alignment.center,
-    //   insetPadding: const EdgeInsets.all(2.0),
-    //   child: Container(
-    //     width: dialogWidth, // Set the width dynamically
-    //     child: Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       // Ensure the column adjusts to its content
-    //       children: [
-    //         // Add your dialog content here
-    //         Padding(
-    //           padding: const EdgeInsets.all(16.0),
-    //           child: Text(
-    //             'Fire Weather Index: $fwi',
-    //             style: const TextStyle(fontSize: 18),
-    //           ),
-    //         ),
-    //         Padding(
-    //           padding: const EdgeInsets.all(16.0),
-    //           child: Text(
-    //             bodyText,
-    //             style: const TextStyle(fontSize: 18),
-    //           ),
-    //         ),
-    //         ElevatedButton(
-    //           onPressed: () {
-    //             Navigator.of(context).pop(); // Close the dialog
-    //           },
-    //           child: const Text('Close'),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
-
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -112,7 +75,7 @@ class InfoDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              "Fire Weather Index ${result}",
+              "مؤشر الطقس الحرائق: ${result}",
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -141,18 +104,18 @@ class InfoDialog extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "Close Window",
+                      "إغلاق النافذة",
                       style: const TextStyle(color: Colors.white, fontSize: 12.0),
                     ),
                   ),
                 ),
-                SizedBox(width: 5,),
+                SizedBox(width: 5),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context)=>Info())
+                          MaterialPageRoute(builder: (context) => Info())
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -162,7 +125,7 @@ class InfoDialog extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "More Info",
+                      "مزيد من المعلومات",
                       style: const TextStyle(color: Colors.white, fontSize: 12.0),
                     ),
                   ),

@@ -8,7 +8,7 @@ class Info extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Fire Protection Info',
+            'معلومات الحماية من الحرائق',
             style: TextStyle(color: Colors.deepOrange),
           ),
           bottom: const TabBar(
@@ -16,8 +16,8 @@ class Info extends StatelessWidget {
             unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.deepOrange,
             tabs: [
-              Tab(text: 'FWI Info'),
-              Tab(text: 'Coating Info'),
+              Tab(text: 'معلومات مؤشر الطقس الناري'),
+              Tab(text: 'معلومات الطلاء'),
             ],
           ),
         ),
@@ -32,167 +32,194 @@ class Info extends StatelessWidget {
   }
 
   Widget _buildFWIInfo() {
-    return SingleChildScrollView(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildCard(
+              title: '1. مؤشر طقس الحرائق المنخفض',
+              content: [
+                _buildContentBlock('التعريف',
+                    'ظروف يكون فيها خطر اندلاع وانتشار الحرائق ضئيل للغاية.'),
+                _buildContentBlock('خصائص الطقس', [
+                  'درجات حرارة منخفضة: طقس معتدل أو بارد يقلل من خطر جفاف النباتات.',
+                  'رطوبة عالية: مستويات رطوبة عالية في الهواء والنباتات تقلل القابلية للاشتعال.',
+                  'رياح خفيفة أو معدومة: الرياح القليلة تقلل من خطر انتشار الحرائق.',
+                  'هطول أمطار حديث: المطر الأخير أو المستمر يحافظ على الوقود (الأعشاب، الأوراق، والخشب) رطباً.',
+                ]),
+                _buildContentBlock('سلوك الحرائق', [
+                  'من غير المرجح أن تبدأ الحرائق بشكل طبيعي، وإذا اشتعلت، تكون سهلة السيطرة أو الإطفاء.',
+                  'انتشار الحرائق ضئيل، والنيران تكون صغيرة ومحدودة.',
+                ]),
+                _buildContentBlock('مثال',
+                    'بداية الربيع أو موسم ما بعد الأمطار في المناطق المعتدلة.'),
+              ],
+            ),
+            const Divider(),
+            _buildCard(
+              title: '2. مؤشر طقس الحرائق المتوسط',
+              content: [
+                _buildContentBlock('التعريف',
+                    'ظروف يكون فيها خطر الحرائق معتدلًا مع زيادة احتمالية الاشتعال والانتشار.'),
+                _buildContentBlock('خصائص الطقس', [
+                  'درجات حرارة دافئة: دفء معتدل يجفف الوقود جزئيًا، مما يزيد من القابلية للاشتعال.',
+                  'رطوبة متوسطة: انخفاض في الرطوبة، لكنها ليست جافة تمامًا.',
+                  'رياح أقوى: الرياح تكون قوية بما يكفي للمساعدة في انتشار النيران إذا اشتعلت.',
+                  'فترة جفاف: الطقس الجاف الأخير قد جفف النباتات جزئيًا، مما يجعلها أكثر عرضة للاشتعال.',
+                ]),
+                _buildContentBlock('سلوك الحرائق', [
+                  'يمكن أن تشتعل الحرائق بسهولة أكبر وتنتشر بشكل معتدل.',
+                  'إخماد الحرائق ممكن، ولكنه يتطلب جهدًا أكبر مقارنةً بظروف مؤشر الطقس الناري المنخفضة.',
+                ]),
+                _buildContentBlock('مثال',
+                    'أيام الصيف الجافة مع نسيم عرضي في الغابات أو الأراضي العشبية.'),
+              ],
+            ),
+            const Divider(),
+            _buildCard(
+              title: '3. مؤشر طقس الحرائق المرتفع',
+              content: [
+                _buildContentBlock('التعريف',
+                    'ظروف يكون فيها خطر الحرائق مرتفعًا للغاية، حيث من المحتمل أن تشتعل النيران وتنتشر بسرعة.'),
+                _buildContentBlock('خصائص الطقس', [
+                  'درجات حرارة عالية: الحرارة العالية تجفف النباتات، مما يجعلها وقودًا قابلاً للاشتعال بشدة.',
+                  'رطوبة منخفضة: قلة الرطوبة في الهواء والنباتات تزيد من مخاطر الاشتعال.',
+                  'رياح قوية: الرياح القوية تنشر النيران بسرعة عبر الوقود، مما يزيد من شدة الحرائق.',
+                  'جفاف طويل: فترات طويلة من قلة أو عدم هطول الأمطار تجعل الوقود جافًا وقابلًا للاشتعال بشدة.',
+                ]),
+                _buildContentBlock('سلوك الحرائق', [
+                  'تشتعل الحرائق بسهولة شديدة ويمكن أن تصبح غير قابلة للسيطرة بسرعة.',
+                  'النيران تنتشر بسرعة ويمكنها تجاوز العوائق مثل خطوط النار أو الطرق أو الأنهار.',
+                  'إخماد الحرائق يكون صعبًا للغاية ويتطلب موارد واسعة النطاق.',
+                ]),
+                _buildContentBlock('مثال',
+                    'موجات الحر أو ظروف الجفاف، خاصة في المناطق المعرضة للحرائق مثل كاليفورنيا أو أستراليا أو البحر الأبيض المتوسط خلال فصل الصيف.'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget _buildCoatingInfo() {
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           _buildCard(
-            title: '1. Low Fire Weather Index',
+            title: '1. الطلاءات المنتفخة',
             content: [
-              _buildContentBlock('Definition',
-                  'Conditions where the risk of a wildfire starting and spreading is minimal.'),
-              _buildContentBlock('Weather Characteristics', [
-                'Cool temperatures: Typically mild or cool weather with little risk of vegetation drying out.',
-                'High humidity: Moisture levels in the air and vegetation are high, reducing flammability.',
-                'Light or no wind: Minimal wind means low risk of fire spread.',
-                'Recent precipitation: Recent or ongoing rain ensures that fuels (grass, leaves, and wood) remain damp.',
-              ]),
-              _buildContentBlock('Fire Behavior', [
-                'Fires are unlikely to start naturally and, if ignited, are easy to control or extinguish.',
-                'Fire spread is minimal, and flames tend to be small and localized.',
-              ]),
-              _buildContentBlock('Example', 'Early spring or post-rainy season in temperate regions.'),
+              _buildContentBlock(
+                'مؤشر الطقس الناري منخفض',
+                'خطر الاشتعال ضئيل؛ يبقى الطلاء غير نشط. موصى به للاستخدام الوقائي على الأشجار أو البنى التحتية ذات القيمة العالية.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري متوسط',
+                'يوفر مقاومة ممتازة للنيران للعوامل الصغيرة مثل الشرر أو اللهب الطفيف.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري مرتفع',
+                'يشكل طبقة كربونية لحماية السطح من الحرارة العالية والنيران.',
+              ),
             ],
           ),
           const Divider(),
           _buildCard(
-            title: '2. Medium Fire Weather Index',
+            title: '2. مثبطات الحريق القائمة على البورون',
             content: [
-              _buildContentBlock('Definition',
-                  'Conditions where fire risks are moderate, with increased potential for ignition and spread.'),
-              _buildContentBlock('Weather Characteristics', [
-                'Warmer temperatures: Moderate warmth dries out fuels partially, increasing flammability.',
-                'Moderate humidity: Reduced moisture in the air, but not yet critically dry.',
-                'Stronger winds: Winds are strong enough to assist in the spread of fire if it starts.',
-                'Drying period: Recent dry weather may have partially dried vegetation, making it more susceptible to ignition.',
-              ]),
-              _buildContentBlock('Fire Behavior', [
-                'Fires can ignite more easily and spread moderately if they occur.',
-                'Fire suppression is manageable but may require more effort than under low FWI conditions.',
-              ]),
-              _buildContentBlock('Example',
-                  'Dry summer days with occasional breezes in forests or grasslands.'),
+              _buildContentBlock(
+                'مؤشر الطقس الناري منخفض',
+                'فعالة في تقليل مخاطر الاشتعال البسيطة الناتجة عن الشرر الصغير.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري متوسط',
+                'يتطلب تطبيقًا أكثر تكرارًا خلال الظروف الجافة.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري مرتفع',
+                'التطبيق المتكرر ضروري. أقل فعالية ضد النيران شديدة الكثافة.',
+              ),
             ],
           ),
           const Divider(),
           _buildCard(
-            title: '3. High Fire Weather Index',
+            title: '3. مثبطات الحريق الهلامية',
             content: [
-              _buildContentBlock('Definition',
-                  'Conditions where wildfire risk is very high, with fires likely to ignite and spread rapidly.'),
-              _buildContentBlock('Weather Characteristics', [
-                'Hot temperatures: High heat dries out vegetation, creating highly flammable fuel.',
-                'Low humidity: Minimal moisture in the air and vegetation increases ignition risks.',
-                'Strong winds: High winds spread flames rapidly across fuels, increasing fire intensity.',
-                'Prolonged dryness: Extended periods of little to no rain lead to extremely dry and combustible fuels.',
-              ]),
-              _buildContentBlock('Fire Behavior', [
-                'Fires start very easily and can become uncontrollable quickly.',
-                'Flames spread rapidly and can jump firebreaks, roads, or rivers.',
-                'Fire suppression is extremely challenging and requires extensive resources.',
-              ]),
-              _buildContentBlock('Example',
-                  'Heatwaves or drought conditions, especially in wildfire-prone regions like California, Australia, or the Mediterranean during peak summer.'),
+              _buildContentBlock(
+                'مؤشر الطقس الناري منخفض',
+                'فائدة محدودة في الظروف ذات المخاطر المنخفضة، حيث أن المواد الهلامية حلول قصيرة الأمد. '
+                    'الأفضل الاحتفاظ بها للاستخدام الوقائي عند توقع زيادة خطر الحريق (مثلًا قبل موجة حر أو في مناطق معرضة للحرائق).',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري متوسط',
+                'فعالة للغاية في حماية الأشجار أو المناطق المعرضة للخطر المباشر. '
+                    'تلتصق المواد الهلامية بشكل جيد وتشكل حاجزًا للرطوبة، مما يقلل من مخاطر الاشتعال في الظروف المعتدلة. '
+                    'يجب مراقبتها لضمان بقائها سليمة، خاصةً في الطقس الجاف.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري مرتفع',
+                'فعالة للغاية في حماية الأشجار بشكل مؤقت خلال حالات الطوارئ المتعلقة بالحرائق. '
+                    'يتطلب تطبيقًا سريعًا قبل وقوع الحريق بسبب قصر مدة فعاليتها. '
+                    'يمكن أن تؤخر انتشار النيران، مما يوفر الوقت لجهود إخماد الحريق.',
+              ),
+            ],
+          ),
+          const Divider(),
+          _buildCard(
+            title: '4. المواد الطينية كمثبطات حرائق',
+            content: [
+              _buildContentBlock(
+                'مؤشر الطقس الناري منخفض',
+                'فائدة منخفضة في هذه الظروف حيث تكون مخاطر الحرائق قليلة. '
+                    'قد تجف المواد الطينية وتتشقق مع مرور الوقت، مما يقلل من فعاليتها. '
+                    'يمكن استخدامها بشكل وقائي على أشجار معينة لإضافة الأمان.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري متوسط',
+                'توفر مقاومة متوسطة للنيران من خلال تشكيل حاجز عازل. '
+                    'تتطلب صيانة حيث تجف المادة الطينية وت deteriorate تحت الضغط البيئي (مثل الرياح أو الحرارة).',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري مرتفع',
+                'أقل فعالية في ظل ظروف الحرائق الشديدة. '
+                    'قد تتشقق المادة الطينية أو تتساقط تحت الحرارة العالية أو في حالة الرياح القوية المصاحبة للحرائق. '
+                    'قد توفر حماية محدودة على المدى القصير للأشجار ذات القيمة العالية.',
+              ),
+            ],
+          ),
+          const Divider(),
+          _buildCard(
+            title: '5. مثبطات الحرائق التجارية المتخصصة',
+            content: [
+              _buildContentBlock(
+                'مؤشر الطقس الناري منخفض',
+                'غير ضرورية في الظروف ذات المخاطر المنخفضة؛ من الأفضل التركيز على التخطيط والاستعداد عند زيادة خطر الحرائق. '
+                    'قد تُستخدم بشكل استراتيجي لإنشاء خطوط النار أو حماية الأشجار الهامة.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري متوسط',
+                'فعالة للغاية في تقليل الاشتعال وانتشار النيران. '
+                    'الأفضل استخدامها في المناطق المعرضة للحرائق أو حيث قد تتأخر موارد إخماد الحرائق.',
+              ),
+              _buildContentBlock(
+                'مؤشر الطقس الناري مرتفع',
+                'من بين الحلول الأكثر فعالية في الظروف ذات المخاطر العالية. '
+                    'تشكل حاجزًا كيميائيًا متينًا يمكنه مقاومة الحرارة العالية والنيران. '
+                    'يتطلب إعادة تطبيق متكرر في حالة هطول الأمطار أو أحداث الحرائق الطويلة.',
+              ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-}
-
-Widget _buildCoatingInfo() {
-  return SingleChildScrollView(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      children: [
-        _buildCard(
-          title: '1. Intumescent Coatings',
-          content: [
-            _buildContentBlock('Low FWI',
-                'Minimal risk of ignition; coating remains inactive. Recommended for proactive use on high-value trees or infrastructure.'),
-            _buildContentBlock('Medium FWI',
-                'Provides excellent fire resistance to isolated sparks, embers, or minor flame exposure.'),
-            _buildContentBlock('High FWI',
-                'Forms a char layer to protect from high heat and flames.'),
-          ],
-        ),
-        const Divider(),
-        _buildCard(
-          title: '2. Boron-Based Fire Retardants',
-          content: [
-            _buildContentBlock('Low FWI',
-                'Effective at reducing minor ignition risks from small sparks.'),
-            _buildContentBlock('Medium FWI',
-                'Requires more frequent application during dry conditions.'),
-            _buildContentBlock('High FWI',
-                'Frequent reapplication is essential. Less effective against high-intensity flames.'),
-          ],
-        ),
-        Divider(),
-        _buildCard(
-          title: '3. Gel Fire Retardants',
-          content: [
-            _buildContentBlock(
-                'Low FWI',
-                'Limited utility in low-risk conditions since gels are short-term solutions. '
-                    'Best saved for preemptive use when fire risks are expected to rise (e.g., before a heatwave or in wildfire-prone areas).'),
-            _buildContentBlock(
-                'Medium FWI',
-                'Highly effective for protecting specific trees or areas at immediate risk. '
-                    'Gels adhere well and maintain a moisture barrier, reducing ignition risks in moderate conditions. '
-                    'Must be monitored to ensure they remain intact, especially in dry weather.'),
-            _buildContentBlock(
-                'High FWI',
-                'Extremely effective in shielding trees temporarily during wildfire emergencies. '
-                    'Requires rapid application just before a fire event due to its short-lived nature. '
-                    'Can delay flame spread, buying time for fire suppression efforts.'),
-          ],
-        ),
-        Divider(),
-        _buildCard(
-          title: '4. Clay-Based Slurries',
-          content: [
-            _buildContentBlock(
-                'Low FWI',
-                'Low utility in these conditions since fire risks are minimal. Clay slurries may dry and crack over time, reducing effectiveness. '
-                    'Can be used proactively on specific trees for added safety.'),
-            _buildContentBlock(
-                'Medium FWI',
-                'Provides moderate fire resistance by forming an insulating barrier. '
-                    'Requires maintenance as the slurry dries and deteriorates under environmental stress (e.g., wind or heat).'),
-            _buildContentBlock(
-                'High FWI',
-                'Less effective under intense fire conditions. '
-                    'Clay can crack or fall off under high heat or if strong winds accompany the fire. '
-                    'May provide limited short-term protection for specific, high-value trees.'),
-          ],
-        ),
-        Divider(),
-        _buildCard(
-          title: '5. Specialized Commercial Fire Retardants',
-          content: [
-            _buildContentBlock(
-                'Low FWI',
-                'Overkill for low-risk conditions; focus is better placed on planning and readiness for when fire risks increase. '
-                    'May be applied strategically to create firebreaks or protect critical trees.'),
-            _buildContentBlock(
-                'Medium FWI',
-                'Highly effective at reducing ignition and flame spread. '
-                    'Best used in areas at risk of wildfires or where fire suppression resources might be delayed.'),
-            _buildContentBlock(
-                'High FWI',
-                'Among the most effective solutions for high-risk conditions. '
-                    'Forms a durable, chemical barrier that can withstand intense heat and flames. '
-                    'Requires frequent reapplication in case of rain or prolonged fire events.'),
-          ],
-        ),
-      ],
     ),
   );
 }
-
 
 
 Widget _buildCard({required String title, required List<Widget> content}) {
@@ -240,7 +267,8 @@ Widget _buildContentBlock(String title, dynamic content) {
             style: const TextStyle(color: Colors.deepOrange),
           )
         else if (content is List<String>)
-          ...content.map((item) => Text('- $item', style: const TextStyle(color: Colors.deepOrange))),
+          ...content.map((item) =>
+              Text('- $item', style: const TextStyle(color: Colors.deepOrange))),
       ],
     ),
   );
