@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 
+import '../widget/infoDialog.dart';
+
 class Country {
   final String name;
   final double latitude;
@@ -339,6 +341,56 @@ class _HomeState extends State<Home> {
                                     textAlign: TextAlign.center,
                                     softWrap: true,
                                     overflow: TextOverflow.visible,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 20.0),
+                                child:TextButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                                          (Set<WidgetState> states) {
+                                        if (states.contains(WidgetState.pressed)) {
+                                          return Colors.white;
+                                        }
+                                        return Colors.white;
+                                      },
+                                    ),
+                                    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+
+                                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                    ),
+                                    padding: WidgetStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                                    ),
+                                    minimumSize: WidgetStateProperty.all<Size>(
+                                      const Size(200, 50),
+                                    ),
+                                    elevation: WidgetStateProperty.resolveWith<double>(
+                                          (Set<WidgetState> states) {
+                                        if (states.contains(WidgetState.pressed)) {
+                                          return 6;
+                                        }
+                                        return 3;
+                                      },
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoDialog(fwi: FWI ?? 0.0);
+                                        });
+                                  },
+                                  child: const Text(
+                                    'عرض المعلومات',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
