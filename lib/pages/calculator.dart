@@ -4,7 +4,7 @@ import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../model/infoDialog.dart';
+import '../widget/infoDialog.dart';
 import 'info.dart';
 
 class Calc extends StatefulWidget {
@@ -143,7 +143,7 @@ class _CalcState extends State<Calc> {
             onPressed: (){
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context)=>const Info())
+                  MaterialPageRoute(builder: (context)=>Info())
               );
             },
             icon: const Icon(Icons.info_outline))

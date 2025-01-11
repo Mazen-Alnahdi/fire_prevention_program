@@ -1,247 +1,247 @@
 import 'package:flutter/material.dart';
 
-class Info extends StatefulWidget {
-  const Info({super.key});
-
-  @override
-  State<Info> createState() => _InfoState();
-}
-
-class _InfoState extends State<Info> {
+class Info extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'نصائح للسلامة من الحرائق',
-          textAlign: TextAlign.right,
+            'Fire Protection Info',
+            style: TextStyle(color: Colors.deepOrange),
           ),
-          backgroundColor: Colors.white,
-          foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
-          centerTitle: true,
-          leading:
-            IconButton(
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back))
-
-        ),
-        body:
-        Padding(padding: const EdgeInsets.only(bottom: 65),
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    Theme(
-                        data: Theme.of(context).copyWith(
-                            dividerColor: Colors.transparent),
-                        child: const Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: Column(
-                            children: [
-                              // Fire Safety in a Workplace Section
-                              ExpansionTile(
-                                title: Text(
-                                  "السلامة من الحرائق في مكان العمل",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                leading: Icon(Icons.fireplace, color: Colors.orange),
-                                initiallyExpanded: true,
-                                children: [
-                                  ExpansionTile(
-                                    title: Text(
-                                      'قم بتركيب أجهزة كشف الدخان',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.smoke_free, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('تأكد من تركيب أجهزة كشف الدخان في كل طابق وفي المناطق عالية الخطورة مثل المطابخ.')),
-                                      ListTile(title: Text('اختبر كاشفات الدخان بانتظام للتأكد من أنها تعمل بشكل صحيح.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'صيانة الأنظمة الكهربائية',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.electric_car, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('افحص الأسلاك بحثًا عن البلى، وتجنب التحميل الزائد على الدوائر.')),
-                                      ListTile(title: Text('تأكد من أن الموظفين المؤهلين فقط هم من يقومون بأعمال الصيانة الكهربائية.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'التخزين الآمن للمواد القابلة للاشتعال',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.local_fire_department, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('تخزين السوائل القابلة للاشتعال في مناطق جيدة التهوية وبعيداً عن مصادر الحرارة.')),
-                                      ListTile(title: Text('أبعد المواد القابلة للاشتعال عن الأجهزة الكهربائية وألسنة اللهب المكشوفة.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'طفايات الحريق ومعدات الطوارئ',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.fire_extinguisher, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('ضع طفايات الحريق في الأماكن التي يسهل الوصول إليها.')),
-                                      ListTile(title: Text('التأكد من تدريب الموظفين على كيفية استخدام طفايات الحريق.')),
-                                      ListTile(title: Text('احتفظ بمجموعة طوارئ جيدة التجهيز تتضمن أدوات السلامة من الحرائق.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'تدريبات مكافحة الحرائق المنتظمة',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.access_alarm, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('قم بإجراء تدريبات منتظمة على الحرائق للتأكد من أن الموظفين يعرفون كيفية الإخلاء بأمان.')),
-                                      ListTile(title: Text('تأكد من أن جميع طرق الهروب محددة بوضوح وخالية من العوائق.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'التعامل السليم مع معدات الطبخ',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    leading: Icon(Icons.kitchen, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('لا تترك معدات الطبخ دون مراقبة أثناء الاستخدام.')),
-                                      ListTile(title: Text('قم بإيقاف تشغيل جميع أجهزة الطهي عند عدم استخدامها.')),
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-                              // Fire Safety at Home Section
-                              ExpansionTile(
-                                title: Text(
-                                  "السلامة من الحرائق في المنزل",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                leading: Icon(Icons.home, color: Colors.orange),
-                                initiallyExpanded: true,
-                                children: [
-                                  ExpansionTile(
-                                    title: Text(
-                                      'قم بتركيب أجهزة كشف الدخان وأول أكسيد الكربون',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.smoke_free, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('قم بتركيب أجهزة الكشف في كل مستوى من منزلك وداخل مناطق النوم.')),
-                                      ListTile(title: Text('اختبار أجهزة الكشف شهريا وتغيير البطاريات بانتظام.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'الحفاظ على السلامة الكهربائية',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.electric_car, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('فحص الأجهزة والأسلاك الكهربائية بحثاً عن أي ضرر.')),
-                                      ListTile(title: Text('تجنب التحميل الزائد على المنافذ الكهربائية.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'أبعد المواد القابلة للاشتعال عن مصادر الحرارة',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.local_fire_department, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('قم بتخزين أعواد الثقاب والولاعات وغيرها من المواد القابلة للاشتعال في مكان آمن.')),
-                                      ListTile(title: Text('احتفظ بالورق والملابس والمواد الأخرى القابلة للاشتعال بعيدًا عن المدافئ.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'إنشاء وممارسة خطة الهروب من الحريق',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.access_alarm, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('تأكد من أن جميع أفراد الأسرة يعرفون كيفية الهروب بأمان من كل غرفة.')),
-                                      ListTile(title: Text('تدرب على طرق الهروب بانتظام، وحدد مكانًا للاجتماع بالخارج.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'استخدم مواد مقاومة للحريق للمفروشات',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.chair, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('فكر في الأثاث أو المفروشات المقاومة للحريق لمنزلك.')),
-                                      ListTile(title: Text('استخدم أغطية النوافذ المقاومة للحريق، خاصة في المطابخ أو بالقرب من أجهزة التدفئة.')),
-                                    ],
-                                  ),
-                                  ExpansionTile(
-                                    title: Text(
-                                      'احتفظ بمطفأة حريق في المطبخ',
-                                      style: TextStyle(fontSize: 18,
-                                        fontWeight: FontWeight.bold,),
-                                    ),
-                                    leading: Icon(Icons.fire_extinguisher, color: Colors.orange),
-                                    children: [
-                                      ListTile(title: Text('ضع طفاية الحريق في مكان يسهل الوصول إليه، خاصة بالقرب من المطبخ.')),
-                                      ListTile(title: Text('معرفة كيفية استخدام طفاية الحريق بشكل صحيح في حالة الطوارئ.')),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ))
-                  ],
-                ),
-              ),
-            ),
+          bottom: const TabBar(
+            labelColor: Colors.deepOrange,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.deepOrange,
+            tabs: [
+              Tab(text: 'FWI Info'),
+              Tab(text: 'Coating Info'),
+            ],
           ),
         ),
-
+        body: TabBarView(
+          children: [
+            _buildFWIInfo(),
+            _buildCoatingInfo(),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildFWIInfo() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          _buildCard(
+            title: '1. Low Fire Weather Index',
+            content: [
+              _buildContentBlock('Definition',
+                  'Conditions where the risk of a wildfire starting and spreading is minimal.'),
+              _buildContentBlock('Weather Characteristics', [
+                'Cool temperatures: Typically mild or cool weather with little risk of vegetation drying out.',
+                'High humidity: Moisture levels in the air and vegetation are high, reducing flammability.',
+                'Light or no wind: Minimal wind means low risk of fire spread.',
+                'Recent precipitation: Recent or ongoing rain ensures that fuels (grass, leaves, and wood) remain damp.',
+              ]),
+              _buildContentBlock('Fire Behavior', [
+                'Fires are unlikely to start naturally and, if ignited, are easy to control or extinguish.',
+                'Fire spread is minimal, and flames tend to be small and localized.',
+              ]),
+              _buildContentBlock('Example', 'Early spring or post-rainy season in temperate regions.'),
+            ],
+          ),
+          const Divider(),
+          _buildCard(
+            title: '2. Medium Fire Weather Index',
+            content: [
+              _buildContentBlock('Definition',
+                  'Conditions where fire risks are moderate, with increased potential for ignition and spread.'),
+              _buildContentBlock('Weather Characteristics', [
+                'Warmer temperatures: Moderate warmth dries out fuels partially, increasing flammability.',
+                'Moderate humidity: Reduced moisture in the air, but not yet critically dry.',
+                'Stronger winds: Winds are strong enough to assist in the spread of fire if it starts.',
+                'Drying period: Recent dry weather may have partially dried vegetation, making it more susceptible to ignition.',
+              ]),
+              _buildContentBlock('Fire Behavior', [
+                'Fires can ignite more easily and spread moderately if they occur.',
+                'Fire suppression is manageable but may require more effort than under low FWI conditions.',
+              ]),
+              _buildContentBlock('Example',
+                  'Dry summer days with occasional breezes in forests or grasslands.'),
+            ],
+          ),
+          const Divider(),
+          _buildCard(
+            title: '3. High Fire Weather Index',
+            content: [
+              _buildContentBlock('Definition',
+                  'Conditions where wildfire risk is very high, with fires likely to ignite and spread rapidly.'),
+              _buildContentBlock('Weather Characteristics', [
+                'Hot temperatures: High heat dries out vegetation, creating highly flammable fuel.',
+                'Low humidity: Minimal moisture in the air and vegetation increases ignition risks.',
+                'Strong winds: High winds spread flames rapidly across fuels, increasing fire intensity.',
+                'Prolonged dryness: Extended periods of little to no rain lead to extremely dry and combustible fuels.',
+              ]),
+              _buildContentBlock('Fire Behavior', [
+                'Fires start very easily and can become uncontrollable quickly.',
+                'Flames spread rapidly and can jump firebreaks, roads, or rivers.',
+                'Fire suppression is extremely challenging and requires extensive resources.',
+              ]),
+              _buildContentBlock('Example',
+                  'Heatwaves or drought conditions, especially in wildfire-prone regions like California, Australia, or the Mediterranean during peak summer.'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+}
+
+Widget _buildCoatingInfo() {
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      children: [
+        _buildCard(
+          title: '1. Intumescent Coatings',
+          content: [
+            _buildContentBlock('Low FWI',
+                'Minimal risk of ignition; coating remains inactive. Recommended for proactive use on high-value trees or infrastructure.'),
+            _buildContentBlock('Medium FWI',
+                'Provides excellent fire resistance to isolated sparks, embers, or minor flame exposure.'),
+            _buildContentBlock('High FWI',
+                'Forms a char layer to protect from high heat and flames.'),
+          ],
+        ),
+        const Divider(),
+        _buildCard(
+          title: '2. Boron-Based Fire Retardants',
+          content: [
+            _buildContentBlock('Low FWI',
+                'Effective at reducing minor ignition risks from small sparks.'),
+            _buildContentBlock('Medium FWI',
+                'Requires more frequent application during dry conditions.'),
+            _buildContentBlock('High FWI',
+                'Frequent reapplication is essential. Less effective against high-intensity flames.'),
+          ],
+        ),
+        Divider(),
+        _buildCard(
+          title: '3. Gel Fire Retardants',
+          content: [
+            _buildContentBlock(
+                'Low FWI',
+                'Limited utility in low-risk conditions since gels are short-term solutions. '
+                    'Best saved for preemptive use when fire risks are expected to rise (e.g., before a heatwave or in wildfire-prone areas).'),
+            _buildContentBlock(
+                'Medium FWI',
+                'Highly effective for protecting specific trees or areas at immediate risk. '
+                    'Gels adhere well and maintain a moisture barrier, reducing ignition risks in moderate conditions. '
+                    'Must be monitored to ensure they remain intact, especially in dry weather.'),
+            _buildContentBlock(
+                'High FWI',
+                'Extremely effective in shielding trees temporarily during wildfire emergencies. '
+                    'Requires rapid application just before a fire event due to its short-lived nature. '
+                    'Can delay flame spread, buying time for fire suppression efforts.'),
+          ],
+        ),
+        Divider(),
+        _buildCard(
+          title: '4. Clay-Based Slurries',
+          content: [
+            _buildContentBlock(
+                'Low FWI',
+                'Low utility in these conditions since fire risks are minimal. Clay slurries may dry and crack over time, reducing effectiveness. '
+                    'Can be used proactively on specific trees for added safety.'),
+            _buildContentBlock(
+                'Medium FWI',
+                'Provides moderate fire resistance by forming an insulating barrier. '
+                    'Requires maintenance as the slurry dries and deteriorates under environmental stress (e.g., wind or heat).'),
+            _buildContentBlock(
+                'High FWI',
+                'Less effective under intense fire conditions. '
+                    'Clay can crack or fall off under high heat or if strong winds accompany the fire. '
+                    'May provide limited short-term protection for specific, high-value trees.'),
+          ],
+        ),
+        Divider(),
+        _buildCard(
+          title: '5. Specialized Commercial Fire Retardants',
+          content: [
+            _buildContentBlock(
+                'Low FWI',
+                'Overkill for low-risk conditions; focus is better placed on planning and readiness for when fire risks increase. '
+                    'May be applied strategically to create firebreaks or protect critical trees.'),
+            _buildContentBlock(
+                'Medium FWI',
+                'Highly effective at reducing ignition and flame spread. '
+                    'Best used in areas at risk of wildfires or where fire suppression resources might be delayed.'),
+            _buildContentBlock(
+                'High FWI',
+                'Among the most effective solutions for high-risk conditions. '
+                    'Forms a durable, chemical barrier that can withstand intense heat and flames. '
+                    'Requires frequent reapplication in case of rain or prolonged fire events.'),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+Widget _buildCard({required String title, required List<Widget> content}) {
+  return Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepOrange,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          ...content,
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildContentBlock(String title, dynamic content) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$title:',
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.deepOrange,
+          ),
+        ),
+        if (content is String)
+          Text(
+            content,
+            style: const TextStyle(color: Colors.deepOrange),
+          )
+        else if (content is List<String>)
+          ...content.map((item) => Text('- $item', style: const TextStyle(color: Colors.deepOrange))),
+      ],
+    ),
+  );
 }

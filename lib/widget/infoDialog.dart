@@ -152,7 +152,7 @@ class InfoDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context)=>const Info())
+                          MaterialPageRoute(builder: (context)=>Info())
                       );
                     },
                     style: ElevatedButton.styleFrom(
