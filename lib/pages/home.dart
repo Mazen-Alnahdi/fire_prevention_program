@@ -15,7 +15,8 @@ class Country {
   final double latitude;
   final double longitude;
 
-  Country({required this.name, required this.latitude, required this.longitude});
+  Country(
+      {required this.name, required this.latitude, required this.longitude});
 }
 
 class Home extends StatefulWidget {
@@ -33,7 +34,7 @@ class _HomeState extends State<Home> {
   FireWeatherIndex fwi = new FireWeatherIndex();
   String result = "";
   MapController _mapController = MapController();
-  Country? selectedCountry= countries.isNotEmpty ? countries[0] : null;
+  Country? selectedCountry = countries.isNotEmpty ? countries[0] : null;
 
   final String key = dotenv.env["API_KEY"]!;
   final String user_agent = dotenv.env["USER_AGENT"]!;
@@ -72,7 +73,8 @@ class _HomeState extends State<Home> {
           wind = (data['current']['wind_kph'] as num).toDouble();
           rain = (data['current']['precip_mm'] as num).toDouble();
 
-          FWI = fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
+          FWI =
+              fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
           if (FWI! < 5.2) {
             result = "خطر منخفض جدًا";
           } else if (FWI! >= 5.2 && FWI! < 11.2) {
@@ -138,11 +140,9 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: (){
+              onPressed: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context)=>Info())
-                );
+                    context, MaterialPageRoute(builder: (context) => Info()));
               },
               icon: const Icon(Icons.info_outline))
         ],
@@ -152,7 +152,8 @@ class _HomeState extends State<Home> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: const LatLng(29.3757, 47.9773), // Default to Kuwait City
+              initialCenter:
+                  const LatLng(29.3757, 47.9773), // Default to Kuwait City
               initialZoom: 13.0,
               onTap: (tapPosition, point) async {
                 setState(() {
@@ -163,8 +164,10 @@ class _HomeState extends State<Home> {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.fire_prevention_program',
+                maxZoom: 19,
+                tileProvider: NetworkTileProvider(),
               ),
               if (selectedLocation != null)
                 MarkerLayer(
@@ -189,10 +192,12 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: Colors.orange, // Background color for the dropdown box
-                borderRadius: BorderRadius.circular(5), // Optional: Rounded corners
+                borderRadius:
+                    BorderRadius.circular(5), // Optional: Rounded corners
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Keep spacing consistent
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween, // Keep spacing consistent
                 children: [
                   // Icon(
                   //   Icons.arrow_drop_down,
@@ -200,8 +205,10 @@ class _HomeState extends State<Home> {
                   // ),
                   Expanded(
                     child: DropdownButton<Country>(
-                      isExpanded: true, // Ensures the dropdown stretches to fit the text alignment
-                      alignment: Alignment.centerRight, // Aligns text to the right
+                      isExpanded:
+                          true, // Ensures the dropdown stretches to fit the text alignment
+                      alignment:
+                          Alignment.centerRight, // Aligns text to the right
                       hint: const Text(
                         "اختر دولة",
                         textDirection: TextDirection.rtl,
@@ -215,14 +222,21 @@ class _HomeState extends State<Home> {
                       onChanged: (Country? newValue) {
                         setState(() {
                           selectedCountry = newValue;
-                          selectedLocation = LatLng(newValue!.latitude, newValue.longitude); // Set location based on selected country
-                          _mapController.move(selectedLocation!, 10.0); // Move the map to the selected country location
+                          selectedLocation = LatLng(
+                              newValue!.latitude,
+                              newValue
+                                  .longitude); // Set location based on selected country
+                          _mapController.move(selectedLocation!,
+                              10.0); // Move the map to the selected country location
                         });
-                        fetchAddressFromCoordinates(selectedLocation!); // Fetch address for the selected country
+                        fetchAddressFromCoordinates(
+                            selectedLocation!); // Fetch address for the selected country
                       },
-                      dropdownColor: Colors.orange, // Dropdown menu background color
+                      dropdownColor:
+                          Colors.orange, // Dropdown menu background color
                       style: const TextStyle(
-                        color: Colors.black, // Text color for selected and dropdown items
+                        color: Colors
+                            .black, // Text color for selected and dropdown items
                         // textAlign: TextAlign.right, // Aligns text to the right
                       ),
                       underline: Container(), // Removes the default underline
@@ -232,9 +246,7 @@ class _HomeState extends State<Home> {
                       ),
                       iconSize: 24, // Size of the icon
                     ),
-
                   ),
-
                 ],
               ),
             ),
@@ -263,14 +275,17 @@ class _HomeState extends State<Home> {
                                 "احتمال نشوب حريق اليوم هو",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.black),
-                                softWrap: true, // Ensures the text wraps if it’s too long
+                                softWrap:
+                                    true, // Ensures the text wraps if it’s too long
                               ),
                             Text(
                               "$result",
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.black),
-                              softWrap: true, // Ensures the text wraps if it’s too long
-                              overflow: TextOverflow.visible, // Prevents text overflow
+                              softWrap:
+                                  true, // Ensures the text wraps if it’s too long
+                              overflow: TextOverflow
+                                  .visible, // Prevents text overflow
                             ),
                           ],
                         ),
@@ -280,14 +295,16 @@ class _HomeState extends State<Home> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
                                         "درجة الحرارة\n${temp}\u00b0C",
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -298,7 +315,8 @@ class _HomeState extends State<Home> {
                                       title: Text(
                                         "رطوبة\n${rh}%",
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -307,14 +325,16 @@ class _HomeState extends State<Home> {
                                 ],
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Flexible(
                                     child: ListTile(
                                       title: Text(
                                         "رياح\n${wind}kph",
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -325,7 +345,8 @@ class _HomeState extends State<Home> {
                                       title: Text(
                                         "مطر\n${rain}mm",
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -346,32 +367,40 @@ class _HomeState extends State<Home> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 20.0),
-                                child:TextButton(
+                                child: TextButton(
                                   style: ButtonStyle(
-                                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                                          (Set<WidgetState> states) {
-                                        if (states.contains(WidgetState.pressed)) {
+                                    backgroundColor:
+                                        WidgetStateProperty.resolveWith<Color>(
+                                      (Set<WidgetState> states) {
+                                        if (states
+                                            .contains(WidgetState.pressed)) {
                                           return Colors.white;
                                         }
                                         return Colors.white;
                                       },
                                     ),
-                                    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
-
-                                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                    foregroundColor:
+                                        WidgetStateProperty.all<Color>(
+                                            Colors.black),
+                                    shape: WidgetStateProperty.all<
+                                        RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(25),
                                       ),
                                     ),
-                                    padding: WidgetStateProperty.all<EdgeInsets>(
-                                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                                    padding:
+                                        WidgetStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.symmetric(
+                                          vertical: 16, horizontal: 32),
                                     ),
                                     minimumSize: WidgetStateProperty.all<Size>(
                                       const Size(200, 50),
                                     ),
-                                    elevation: WidgetStateProperty.resolveWith<double>(
-                                          (Set<WidgetState> states) {
-                                        if (states.contains(WidgetState.pressed)) {
+                                    elevation:
+                                        WidgetStateProperty.resolveWith<double>(
+                                      (Set<WidgetState> states) {
+                                        if (states
+                                            .contains(WidgetState.pressed)) {
                                           return 6;
                                         }
                                         return 3;
@@ -433,7 +462,10 @@ class _HomeState extends State<Home> {
 }
 
 List<Country> countries = [
-  Country(name: "محمية صباح الأحمد الطبيعية", latitude: 29.5796, longitude: 47.8232),
+  Country(
+      name: "محمية صباح الأحمد الطبيعية",
+      latitude: 29.5796,
+      longitude: 47.8232),
   Country(name: "محمية الشقايا", latitude: 29.3954, longitude: 47.5948),
   Country(name: "محمية أم القرين", latitude: 29.2270, longitude: 47.8790),
   Country(name: "محمية مبارك الكبير", latitude: 29.0471, longitude: 48.0253),
@@ -448,7 +480,8 @@ List<DropdownMenuItem<Country>> getDropdownItems() {
         child: Text(
           country.name,
           textAlign: TextAlign.right, // Align the text to the right
-          textDirection: TextDirection.rtl, // Ensure proper text direction for Arabic
+          textDirection:
+              TextDirection.rtl, // Ensure proper text direction for Arabic
           style: const TextStyle(
             color: Colors.black, // Text color
           ),
