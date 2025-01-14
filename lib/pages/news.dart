@@ -46,8 +46,13 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
+        final imageUrl = data['main_image']['url'] ?? "";
+
+        // Use a CORS proxy to fetch the image
+        final proxyUrl = 'https://cors-anywhere.herokuapp.com/$imageUrl';
+
         setState(() {
-          imgURL = data['main_image']['url'] ?? "";
+          imgURL = proxyUrl;
           isLoading = false;
         });
       } else {
@@ -60,6 +65,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
       print("Error fetching data: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
