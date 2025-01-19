@@ -7,6 +7,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widget/infoDialog.dart';
 
@@ -455,6 +456,20 @@ class _HomeState extends State<Home> {
               child: const Icon(Icons.place, color: Colors.white),
             ),
           ),
+          Positioned(
+            bottom: 70,
+            left: 20,
+            child: FloatingActionButton(
+              onPressed: () {
+                // Simulate a call to 911
+                const emergencyNumber = 'tel:911';
+                launchUrl(Uri.parse(emergencyNumber));
+              },
+              backgroundColor: Colors.orange,
+              child: const Icon(Icons.phone, color: Colors.white),
+            ),
+          ),
+
         ],
       ),
     );
