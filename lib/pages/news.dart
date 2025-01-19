@@ -46,13 +46,8 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        final imageUrl = data['main_image']['url'] ?? "";
-
-        // Use a CORS proxy to fetch the image
-        final proxyUrl = 'https://cors-anywhere.herokuapp.com/$imageUrl';
-
         setState(() {
-          imgURL = proxyUrl;
+          imgURL = data['main_image']['url'] ?? "";
           isLoading = false;
         });
       } else {
