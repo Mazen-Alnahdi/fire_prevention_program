@@ -102,7 +102,7 @@ class _MainState extends State<Main> with SingleTickerProviderStateMixin {
           child: Padding(
               padding: const EdgeInsets.all(8.0),
           child: Image.asset(
-              "assets/img.png",
+              "assets/fire_extinguisher.png",
           width: 100,
           height: 100,),
           ),
@@ -110,7 +110,7 @@ class _MainState extends State<Main> with SingleTickerProviderStateMixin {
         // RotationTransition(
         //   turns: _controller,
         //   child: Image.asset(
-        //     'assets/img.png', // Replace with your image path
+        //     'assets/fire_extinguisher.png', // Replace with your image path
         //     width: 100, // Set image size
         //     height: 100,
         //   ),
