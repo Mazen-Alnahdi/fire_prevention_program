@@ -102,7 +102,7 @@ class _MainState extends State<Main> with SingleTickerProviderStateMixin {
           child: Padding(
               padding: const EdgeInsets.all(8.0),
           child: Image.asset(
-              "assets/fire_extinguisher.png",
+              "assets/img.png",
           width: 100,
           height: 100,),
           ),
