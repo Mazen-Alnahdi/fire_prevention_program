@@ -70,7 +70,7 @@ flutter:
   assets:
       - .env
       - assets/images/
-      - assets/fire_extinguisher.png
+#      - assets/fire_extinguisher.png
       - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
