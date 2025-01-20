@@ -32,6 +32,12 @@ class InfoDialog extends StatelessWidget {
     Color med = Colors.orange;
     Color high = Colors.red;
 
+    if(fwi==null){
+      result = "هو خطر منخفض جدًا";
+      bodyText = lowFWI;
+      selectedColor = low;
+    }
+
     if (fwi < 5.2) {
       result = "هو خطر منخفض جدًا";
       bodyText = lowFWI;

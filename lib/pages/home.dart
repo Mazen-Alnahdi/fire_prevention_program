@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+// import 'package:';
 
 import '../widget/infoDialog.dart';
 
@@ -108,28 +109,72 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<Position> _determinePosition() async {
+  Future<Position> _determinePosition(BuildContext context) async {
     bool serviceEnabled;
     LocationPermission permission;
 
+    // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      // Show dialog if location services are disabled
+      _showLocationDialog(
+        context,
+        'Location Service Disabled',
+        'Please enable location services to proceed.',
+      );
       return Future.error('Location services are disabled.');
     }
 
+    // Check for location permissions
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        // Show dialog if permissions are denied
+        _showLocationDialog(
+          context,
+          'Location Permission Denied',
+          'Please grant location permissions to proceed.',
+        );
         return Future.error('Location permissions are denied');
       }
     }
+
     if (permission == LocationPermission.deniedForever) {
+      // Show dialog if permissions are permanently denied
+      _showLocationDialog(
+        context,
+        'Location Permission Permanently Denied',
+        'Location permissions are permanently denied. Please enable them in the app settings.',
+      );
       return Future.error('Location permissions are permanently denied.');
     }
 
+    // If everything is fine, return the current position
     return await Geolocator.getCurrentPosition();
   }
+
+  void _showLocationDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.red,
+          title: Text(title,style: TextStyle(color: Colors.white),),
+          content: Text(message,style: TextStyle(color: Colors.white),),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK',style: TextStyle(color: Colors.white),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -439,7 +484,7 @@ class _HomeState extends State<Home> {
             child: FloatingActionButton(
               onPressed: () async {
                 // Get the user's current location
-                final position = await _determinePosition();
+                final position = await _determinePosition(context);
                 final LatLng userLocation = LatLng(
                   position.latitude,
                   position.longitude,

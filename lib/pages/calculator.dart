@@ -196,7 +196,7 @@ class _CalcState extends State<Calc> {
                           helper:  Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              '-100 إلى 100',
+                              '١٠٠- إلى ١٠٠',
                               textAlign: TextAlign.right,
                               style: TextStyle(color: Colors.grey),
                             ),
@@ -224,7 +224,7 @@ class _CalcState extends State<Calc> {
                     "(%) الرطوبة",
                     rhText,
                     "الرطوبة بالنسبة المئوية هي مقياس لبخار الماء في الهواء وتستخدم في رمز رطوبة الوقود الدقيق ورمز رطوبة داف",
-                    "0-100",
+                    '٠ - ١٠٠',
                     0,
                     100,
                     false
@@ -234,7 +234,7 @@ class _CalcState extends State<Calc> {
                     "(kph) الرياح",
                     windText,
                     "يتم استخدام سرعة الرياح بالكيلومتر في الساعة في كود رطوبة الوقود الدقيق ومؤشر الانتشار الأولي",
-                    "0-118",
+                    "٠-١١٨",
                     0,
                     118,
                     false
@@ -244,7 +244,7 @@ class _CalcState extends State<Calc> {
                     "(mm) الأمطار",
                     rainText,
                     "يتم استخدام هطول الأمطار المتراكم بالملليمتر والمعروف باسم هطول الأمطار في كود رطوبة الوقود الدقيق، ورمز رطوبة داف، ورمز الجفاف",
-                    "0-100",
+                    "٠-١٠٠",
                     0,
                     100,
                     false
@@ -254,7 +254,7 @@ class _CalcState extends State<Calc> {
                     "خط العرض (\u00b0)",
                     latText,
                     "خط العرض بالدرجات العشرية للموقع الذي يتم إجراء الحسابات له واستخدامه في رمز رطوبة داف وكود الجفاف",
-                    "-90 إلى 90",
+                    "−٩٠ إلى ٩٠",
                     -90,
                     90,
                     true
