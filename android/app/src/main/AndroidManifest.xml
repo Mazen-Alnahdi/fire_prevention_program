@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET"/> <!-- Add this -->
     <application
-        android:label="fire_program"
+        android:label="الحرائق الطبيعية"
         android:name="${applicationName}"
         android:icon="@mipmap/logo"
         android:usesCleartextTraffic="true">
