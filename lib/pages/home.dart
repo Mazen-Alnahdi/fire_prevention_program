@@ -507,7 +507,7 @@ class _HomeState extends State<Home> {
             child: FloatingActionButton(
               onPressed: () {
                 // Simulate a call to 911
-                const emergencyNumber = 'tel:911';
+                const emergencyNumber = 'tel:112';
                 launchUrl(Uri.parse(emergencyNumber));
               },
               backgroundColor: Colors.orange,

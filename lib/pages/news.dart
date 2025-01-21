@@ -66,7 +66,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("بيانات الحرائق والأخبار"),
+        title: const Text("خريطة الحرارة و حرائق سابقة"),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(255, 75, 0, 100),
         centerTitle: true,
