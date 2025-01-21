@@ -1,5 +1,5 @@
 name: fire_program
-description: "A new Flutter project."
+description: "An educational application designed to raise awareness about natural fires, their prevention, and safety measures. This app serves as an educational tool to help users understand and respond to fire-related emergencies."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -49,6 +49,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  change_app_package_name: ^1.1.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

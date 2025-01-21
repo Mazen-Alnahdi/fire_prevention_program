@@ -1,4 +1,4 @@
-package com.example.fire_program;
+package com.mazen.fireprogram;
 
 import io.flutter.embedding.android.FlutterActivity;
 
