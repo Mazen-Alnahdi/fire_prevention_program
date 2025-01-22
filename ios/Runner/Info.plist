@@ -8,6 +8,12 @@
     <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>armv7</string>
+    </array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -27,7 +33,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>6</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
