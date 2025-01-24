@@ -27,11 +27,17 @@ workflows:
       - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
+      - name: Write private key
+        script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --create
+            --create \
+            --private-key @/tmp/private_key.p8 \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID"
       - name: Configure Podfile
         script: |
           cd ios
