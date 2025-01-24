@@ -12,33 +12,40 @@ workflows:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.mazen.fireprogram"
-        APP_STORE_ID: "1737745214"  # Your app's App Store ID from the screenshot
+        APP_STORE_CONNECT_ISSUER_ID: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"  # Example issuer ID - replace with yours
+        APP_STORE_CONNECT_KEY_IDENTIFIER: "5Q78MLL5J3"
+        APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
       flutter: stable
     scripts:
-      - name: Set up keychain to be used for code signing using Codemagic CLI 'keychain' command
+      - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
-      - name: Fetch signing files
+      - name: Set up code signing settings
         script: |
+          # Download signing files
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --api-key-path="5Q78MLL5J3" \
-            --issuer-id=$APP_STORE_CONNECT_ISSUER_ID \
-            --profile-name="Educational Natural Fire program ios_app_store 1737745214"
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles --project ios/Runner.xcodeproj
+            --certificate-key=@file:/tmp/certificate.p12 \
+            --api-key-path="5Q78MLL5J3"
+          
+          # Set up signing certificate
+          keychain add-certificates
+          
+          # Set up code signing settings on Xcode project
+          xcode-project use-profiles
       - name: Get Flutter packages
         script: |
           flutter packages pub get
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
-            --build-number=$(($(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID") + 1)) \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -46,9 +53,10 @@ workflows:
       - flutter_drive.log
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: "5Q78MLL5J3"  # Code Magic illusionaire key
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        issuer_id: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"  # Replace with your issuer ID
         submit_to_testflight: true
         beta_groups:
           - "Internal" 
+
+          
