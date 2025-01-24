@@ -29,13 +29,23 @@ workflows:
           keychain initialize
       - name: Write private key
         script: |
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
+          # Create directory for keys
+          mkdir -p /tmp/keys
+          
+          # Write the key directly (it should already include BEGIN and END markers)
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr '\n' '~' | sed 's/~/\n/g' > /tmp/keys/key.p8
+          
+          # Debug: Show key format (without revealing content)
+          echo "Key file structure:"
+          head -n 1 /tmp/keys/key.p8
+          echo "[KEY CONTENT HIDDEN]"
+          tail -n 1 /tmp/keys/key.p8
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --private-key @/tmp/private_key.p8 \
+            --private-key @/tmp/keys/key.p8 \
             --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID"
       - name: Configure Podfile
