@@ -12,6 +12,7 @@ workflows:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.mazen.fireprogram"
+        APP_STORE_ID: "1737745214"  # Your app's App Store ID from the screenshot
       flutter: stable
     scripts:
       - name: Set up keychain to be used for code signing using Codemagic CLI 'keychain' command
@@ -23,10 +24,11 @@ workflows:
             --type IOS_APP_STORE \
             --create \
             --api-key-path="5Q78MLL5J3" \
-            --issuer-id=$APP_STORE_CONNECT_ISSUER_ID
+            --issuer-id=$APP_STORE_CONNECT_ISSUER_ID \
+            --profile-name="Educational Natural Fire program ios_app_store 1737745214"
       - name: Set up code signing settings on Xcode project
         script: |
-          xcode-project use-profiles
+          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Get Flutter packages
         script: |
           flutter packages pub get
