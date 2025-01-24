@@ -12,7 +12,7 @@ workflows:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.mazen.fireprogram"
-        APP_STORE_CONNECT_ISSUER_ID: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"  # Example issuer ID - replace with yours
+        APP_STORE_CONNECT_ISSUER_ID: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "5Q78MLL5J3"
         APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
       flutter: stable
@@ -53,8 +53,9 @@ workflows:
       - flutter_drive.log
     publishing:
       app_store_connect:
-        key_id: "5Q78MLL5J3"  # Code Magic illusionaire key
-        issuer_id: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"  # Replace with your issuer ID
+        api_key: ${APP_STORE_CONNECT_PRIVATE_KEY}
+        key_id: "5Q78MLL5J3"
+        issuer_id: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"
         submit_to_testflight: true
         beta_groups:
           - "Internal" 
