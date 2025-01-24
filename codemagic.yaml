@@ -21,7 +21,9 @@ workflows:
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --create
+            --create \
+            --api-key-path="5Q78MLL5J3" \
+            --issuer-id=$APP_STORE_CONNECT_ISSUER_ID
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
@@ -43,8 +45,8 @@ workflows:
     publishing:
       app_store_connect:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_ID
+        key_id: "5Q78MLL5J3"  # Code Magic illusionaire key
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
-        beta_groups: # Optional: Specify beta testing groups
+        beta_groups:
           - "Internal" 
