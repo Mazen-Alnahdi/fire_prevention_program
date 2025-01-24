@@ -4,7 +4,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       ios_signing:
-        distribution_type: app_store
+        distribution_type: app-store
         bundle_identifier: com.mazen.fireprogram
       xcode: latest
       cocoapods: default
@@ -18,6 +18,16 @@ workflows:
         APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
       flutter: stable
     scripts:
+      - name: Check available profiles and certificates
+        script: |
+          # List all available profiles
+          app-store-connect list-profiles
+          
+          # List available certificates
+          app-store-connect list-certificates
+          
+          # List available devices
+          app-store-connect list-devices
       - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
@@ -29,7 +39,14 @@ workflows:
           # Write the private key to a file
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" > $CM_BUILD_DIR/certificates/private_key.p8
           
-          # Create the provisioning profile if it doesn't exist
+          # Try to fetch existing profile first
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" || echo "No existing profile found"
+          
+          # Create new profile if needed
           app-store-connect create-app-store-profile \
             --bundle-id="$BUNDLE_ID" \
             --profile-type IOS_APP_STORE \
@@ -37,7 +54,7 @@ workflows:
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
-          # Fetch signing files
+          # Fetch signing files again after creation
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
@@ -48,8 +65,8 @@ workflows:
           # Add certificates to keychain
           keychain add-certificates
           
-          # Set up code signing settings on Xcode project
-          xcode-project use-profiles --project ios/Runner.xcodeproj
+          # Set up code signing settings on Xcode project with verbose output
+          xcode-project use-profiles --project ios/Runner.xcodeproj --verbose
       - name: Get Flutter packages
         script: |
           flutter packages pub get
