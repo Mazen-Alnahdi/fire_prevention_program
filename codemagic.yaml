@@ -23,27 +23,45 @@ workflows:
           # Create a temporary directory for certificates
           mkdir -p $CM_BUILD_DIR/certificates
           
-          # Write the private key to a file (ensuring proper formatting)
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr -d '\r' > $CM_BUILD_DIR/certificates/private_key.p8
+          # Write the private key to a file with proper PEM format
+          echo "-----BEGIN PRIVATE KEY-----" > $CM_BUILD_DIR/certificates/private_key.p8
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr -d '\r' >> $CM_BUILD_DIR/certificates/private_key.p8
+          echo "-----END PRIVATE KEY-----" >> $CM_BUILD_DIR/certificates/private_key.p8
           
           # Debug: List current certificates and profiles
-          app-store-connect list-certificates --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
-          app-store-connect list-profiles --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
+          app-store-connect list-certificates \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
+          
+          app-store-connect list-profiles \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
           # Create certificate if needed
           app-store-connect create-certificate \
             --type IOS_DISTRIBUTION \
-            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
             --save
+          
+          # Get the certificate ID from the created certificate
+          CERT_ID=$(app-store-connect list-certificates \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
+            --type IOS_DISTRIBUTION \
+            --json | jq -r '.[0].id')
           
           # Create profile with push notifications enabled
           app-store-connect create-profile \
             --name="$APP_NAME AppStore Profile" \
             --bundle-id="$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --certificate-ids "$CERT_ID" \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
@@ -51,7 +69,7 @@ workflows:
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
@@ -60,12 +78,6 @@ workflows:
           
           # Set up code signing settings on Xcode project
           xcode-project use-profiles
-          
-          # Enable Push Notifications capability
-          xcode-project enable-capabilities \
-            --project ios/Runner.xcodeproj \
-            --target Runner \
-            --capabilities=push
       - name: Get Flutter packages
         script: |
           flutter packages pub get
