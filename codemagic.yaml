@@ -32,14 +32,27 @@ workflows:
           # Create directory for keys
           mkdir -p /tmp/keys
           
-          # Write the key directly (it should already include BEGIN and END markers)
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr '\n' '~' | sed 's/~/\n/g' > /tmp/keys/key.p8
+          # Write the key with explicit formatting
+          cat > /tmp/keys/key.p8 << 'EOT'
+          -----BEGIN PRIVATE KEY-----
+          $APP_STORE_CONNECT_PRIVATE_KEY
+          -----END PRIVATE KEY-----
+          EOT
+          
+          # Format the key properly
+          contents=$(cat /tmp/keys/key.p8)
+          echo "-----BEGIN PRIVATE KEY-----" > /tmp/keys/key.p8
+          echo "$contents" | grep -v "PRIVATE KEY" | tr -d '\n\r ' | fold -w 64 >> /tmp/keys/key.p8
+          echo "-----END PRIVATE KEY-----" >> /tmp/keys/key.p8
           
           # Debug: Show key format (without revealing content)
           echo "Key file structure:"
           head -n 1 /tmp/keys/key.p8
           echo "[KEY CONTENT HIDDEN]"
           tail -n 1 /tmp/keys/key.p8
+          
+          # Debug: Check file permissions
+          ls -l /tmp/keys/key.p8
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
