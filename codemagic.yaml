@@ -5,19 +5,25 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.mazen.fireprogram # Update this to match your bundle identifier
+        bundle_identifier: com.mazen.fireprogram
+      xcode: latest
+      cocoapods: default
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.mazen.fireprogram"
       flutter: stable
     scripts:
-      - name: Set up code signing settings
+      - name: Set up keychain to be used for code signing using Codemagic CLI 'keychain' command
         script: |
           keychain initialize
+      - name: Fetch signing files
+        script: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create
-          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
@@ -36,9 +42,9 @@ workflows:
       - flutter_drive.log
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # You'll need to add this to your Codemagic environment variables
-        key_id: $APP_STORE_CONNECT_KEY_ID # You'll need to add this to your Codemagic environment variables
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # You'll need to add this to your Codemagic environment variables
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
         beta_groups: # Optional: Specify beta testing groups
           - "Internal" 
