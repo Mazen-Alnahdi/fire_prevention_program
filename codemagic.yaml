@@ -38,7 +38,7 @@ workflows:
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
             --save
           
-          # Create profile
+          # Create profile with push notifications enabled
           app-store-connect create-profile \
             --name="$APP_NAME AppStore Profile" \
             --bundle-id="$BUNDLE_ID" \
@@ -47,7 +47,7 @@ workflows:
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
-          # Fetch signing files
+          # Fetch signing files with push notification entitlements
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
@@ -60,6 +60,12 @@ workflows:
           
           # Set up code signing settings on Xcode project
           xcode-project use-profiles
+          
+          # Enable Push Notifications capability
+          xcode-project enable-capabilities \
+            --project ios/Runner.xcodeproj \
+            --target Runner \
+            --capabilities=push
       - name: Get Flutter packages
         script: |
           flutter packages pub get
@@ -82,6 +88,11 @@ workflows:
               <false/>
               <key>uploadSymbols</key>
               <true/>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.mazen.fireprogram</key>
+                  <string>$APP_NAME AppStore Profile</string>
+              </dict>
           </dict>
           </plist>
           EOF
