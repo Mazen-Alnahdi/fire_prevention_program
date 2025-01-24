@@ -12,7 +12,7 @@
     <false/>
     <key>UIBackgroundModes</key>
     <array>
-        <string>remote-notification</string>
+        <string>location</string>
     </array>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
@@ -61,7 +61,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-    <key>NSRemoteNotificationUsageDescription</key>
-    <string>We use notifications to keep you updated about important fire alerts and emergency updates in your area.</string>
 </dict>
 </plist>
