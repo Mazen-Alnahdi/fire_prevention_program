@@ -3,9 +3,6 @@ workflows:
     name: iOS Workflow
     instance_type: mac_mini_m1
     environment:
-      ios_signing:
-        distribution_type: app-store
-        bundle_identifier: com.mazen.fireprogram
       xcode: latest
       cocoapods: default
       vars:
@@ -18,35 +15,30 @@ workflows:
         APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
       flutter: stable
     scripts:
-      - name: Check available profiles and certificates
-        script: |
-          # List all available profiles
-          app-store-connect list-profiles
-          
-          # List available certificates
-          app-store-connect list-certificates
-          
-          # List available devices
-          app-store-connect list-devices
       - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
-      - name: Fetch signing files
+      - name: Set up code signing
         script: |
-          # Create a temporary directory for the certificates
+          # Create a temporary directory for certificates
           mkdir -p $CM_BUILD_DIR/certificates
           
           # Write the private key to a file
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" > $CM_BUILD_DIR/certificates/private_key.p8
           
-          # Try to fetch existing profile first
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
+          # Debug: List current certificates and profiles
+          app-store-connect list-certificates
+          app-store-connect list-profiles
+          
+          # Create certificate if needed
+          app-store-connect create-certificate \
+            --type IOS_DISTRIBUTION \
             --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" || echo "No existing profile found"
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
+            --save
           
-          # Create new profile if needed
+          # Create and fetch profile
           app-store-connect create-app-store-profile \
             --bundle-id="$BUNDLE_ID" \
             --profile-type IOS_APP_STORE \
@@ -54,10 +46,11 @@ workflows:
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
-          # Fetch signing files again after creation
+          # Fetch signing files
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --certificate-key=@file:$CM_BUILD_DIR/certificates/private_key.p8 \
             --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
@@ -65,8 +58,8 @@ workflows:
           # Add certificates to keychain
           keychain add-certificates
           
-          # Set up code signing settings on Xcode project with verbose output
-          xcode-project use-profiles --project ios/Runner.xcodeproj --verbose
+          # Set up code signing settings on Xcode project
+          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Get Flutter packages
         script: |
           flutter packages pub get
@@ -75,8 +68,26 @@ workflows:
           find . -name "Podfile" -execdir pod install \;
       - name: Flutter build ipa
         script: |
+          # Create export options plist
+          cat >> $CM_BUILD_DIR/export_options.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>N4R8LWJ853</string>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+          
           flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist
+            --export-options-plist=$CM_BUILD_DIR/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
