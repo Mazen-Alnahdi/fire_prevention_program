@@ -23,26 +23,27 @@ workflows:
           # Create a temporary directory for certificates
           mkdir -p $CM_BUILD_DIR/certificates
           
-          # Write the private key to a file
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > $CM_BUILD_DIR/certificates/private_key.p8
+          # Write the private key to a file (ensuring proper formatting)
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr -d '\r' > $CM_BUILD_DIR/certificates/private_key.p8
           
           # Debug: List current certificates and profiles
-          app-store-connect list-certificates
-          app-store-connect list-profiles
+          app-store-connect list-certificates --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
+          app-store-connect list-profiles --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
           # Create certificate if needed
           app-store-connect create-certificate \
             --type IOS_DISTRIBUTION \
-            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
             --save
           
-          # Create and fetch profile
-          app-store-connect create-app-store-profile \
+          # Create profile
+          app-store-connect create-profile \
+            --name="$APP_NAME AppStore Profile" \
             --bundle-id="$BUNDLE_ID" \
-            --profile-type IOS_APP_STORE \
-            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --type IOS_APP_STORE \
+            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
@@ -50,8 +51,7 @@ workflows:
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --certificate-key=@file:$CM_BUILD_DIR/certificates/private_key.p8 \
-            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --private-key="$APP_STORE_CONNECT_PRIVATE_KEY" \
             --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
@@ -59,7 +59,7 @@ workflows:
           keychain add-certificates
           
           # Set up code signing settings on Xcode project
-          xcode-project use-profiles --project ios/Runner.xcodeproj
+          xcode-project use-profiles
       - name: Get Flutter packages
         script: |
           flutter packages pub get
