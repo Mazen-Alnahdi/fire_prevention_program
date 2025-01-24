@@ -9,108 +9,179 @@ workflows:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.mazen.fireprogram"
-        APP_NAME: "Educational Natural Fire program"
         APP_STORE_CONNECT_ISSUER_ID: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "5Q78MLL5J3"
-        APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
       flutter: stable
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.pub-cache
     scripts:
+      - name: Clean build
+        script: |
+          flutter clean
+          cd ios
+          rm -rf Pods Podfile.lock
+          cd ..
+          flutter pub get
       - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
-      - name: Set up code signing
+      - name: Fetch signing files
         script: |
-          # Create a temporary directory for certificates
-          mkdir -p $CM_BUILD_DIR/certificates
-          
-          # Write the private key to a file with proper PEM format
-          echo "-----BEGIN PRIVATE KEY-----" > $CM_BUILD_DIR/certificates/private_key.p8
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tr -d '\r' >> $CM_BUILD_DIR/certificates/private_key.p8
-          echo "-----END PRIVATE KEY-----" >> $CM_BUILD_DIR/certificates/private_key.p8
-          
-          # Debug: List current certificates and profiles
-          app-store-connect list-certificates \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
-          
-          app-store-connect list-profiles \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
-          
-          # Create certificate if needed
-          app-store-connect create-certificate \
-            --type IOS_DISTRIBUTION \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
-            --save
-          
-          # Get the certificate ID from the created certificate
-          CERT_ID=$(app-store-connect list-certificates \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID" \
-            --type IOS_DISTRIBUTION \
-            --json | jq -r '.[0].id')
-          
-          # Create profile with push notifications enabled
-          app-store-connect create-profile \
-            --name="$APP_NAME AppStore Profile" \
-            --bundle-id="$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --certificate-ids "$CERT_ID" \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
-          
-          # Fetch signing files with push notification entitlements
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --create \
-            --private-key @$CM_BUILD_DIR/certificates/private_key.p8 \
-            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
+            --create
+      - name: Configure Podfile
+        script: |
+          cd ios
+          cat >> Podfile << EOF
+          platform :ios, '12.0'
           
-          # Add certificates to keychain
-          keychain add-certificates
+          # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
           
-          # Set up code signing settings on Xcode project
-          xcode-project use-profiles
-      - name: Get Flutter packages
+          project 'Runner', {
+            'Debug' => :debug,
+            'Profile' => :release,
+            'Release' => :release,
+          }
+          
+          def flutter_root
+            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+            unless File.exist?(generated_xcode_build_settings_path)
+              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+            end
+          
+            File.foreach(generated_xcode_build_settings_path) do |line|
+              matches = line.match(/FLUTTER_ROOT\=(.*)/)
+              return matches[1].strip if matches
+            end
+            raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+          end
+          
+          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+          
+          flutter_ios_podfile_setup
+          
+          target 'Runner' do
+            use_frameworks!
+            use_modular_headers!
+          
+            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+          end
+          
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              flutter_additional_ios_build_settings(target)
+              
+              # Add the following block for geolocator
+              target.build_configurations.each do |config|
+                config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+                  '$(inherited)',
+                  'PERMISSION_LOCATION=1',
+                ]
+                
+                # Ensure deployment target is set to iOS 12.0
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+              end
+            end
+          end
+          EOF
+          cd ..
+      - name: Update Info.plist
         script: |
-          flutter packages pub get
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Flutter build ipa
-        script: |
-          # Create export options plist
-          cat >> $CM_BUILD_DIR/export_options.plist << EOF
+          cd ios/Runner
+          cat > Info.plist << EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-              <key>method</key>
-              <string>app-store</string>
-              <key>teamID</key>
-              <string>N4R8LWJ853</string>
-              <key>uploadBitcode</key>
+              <key>NSLocationWhenInUseUsageDescription</key>
+              <string>This app needs access to location when open to show nearby fire incidents and emergency resources.</string>
+              <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+              <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
+              <key>NSLocationAlwaysUsageDescription</key>
+              <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
+              <key>ITSAppUsesNonExemptEncryption</key>
               <false/>
-              <key>uploadSymbols</key>
+              <key>UIBackgroundModes</key>
+              <array>
+                  <string>location</string>
+              </array>
+              <key>UIRequiredDeviceCapabilities</key>
+              <array>
+                  <string>armv7</string>
+                  <string>location-services</string>
+              </array>
+              <key>CFBundleDevelopmentRegion</key>
+              <string>$(DEVELOPMENT_LANGUAGE)</string>
+              <key>CFBundleDisplayName</key>
+              <string>الحرائق الطبيعية</string>
+              <key>CFBundleExecutable</key>
+              <string>$(EXECUTABLE_NAME)</string>
+              <key>CFBundleIdentifier</key>
+              <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+              <key>CFBundleInfoDictionaryVersion</key>
+              <string>6.0</string>
+              <key>CFBundleName</key>
+              <string>الحرائق الطبيعية</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0.1</string>
+              <key>CFBundleSignature</key>
+              <string>????</string>
+              <key>CFBundleVersion</key>
+              <string>$(FLUTTER_BUILD_NUMBER)</string>
+              <key>LSRequiresIPhoneOS</key>
               <true/>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>com.mazen.fireprogram</key>
-                  <string>$APP_NAME AppStore Profile</string>
-              </dict>
+              <key>UILaunchStoryboardName</key>
+              <string>LaunchScreen</string>
+              <key>UIMainStoryboardFile</key>
+              <string>Main</string>
+              <key>UISupportedInterfaceOrientations</key>
+              <array>
+                  <string>UIInterfaceOrientationPortrait</string>
+                  <string>UIInterfaceOrientationLandscapeLeft</string>
+                  <string>UIInterfaceOrientationLandscapeRight</string>
+              </array>
+              <key>UISupportedInterfaceOrientations~ipad</key>
+              <array>
+                  <string>UIInterfaceOrientationPortrait</string>
+                  <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                  <string>UIInterfaceOrientationLandscapeLeft</string>
+                  <string>UIInterfaceOrientationLandscapeRight</string>
+              </array>
+              <key>CADisableMinimumFrameDurationOnPhone</key>
+              <true/>
+              <key>UIApplicationSupportsIndirectInputEvents</key>
+              <true/>
           </dict>
           </plist>
           EOF
-          
-          flutter build ipa --release \
-            --export-options-plist=$CM_BUILD_DIR/export_options.plist
+          cd ../..
+      - name: Update Runner.entitlements
+        script: |
+          cd ios/Runner
+          cat > Runner.entitlements << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+          </dict>
+          </plist>
+          EOF
+          cd ../..
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter build ipa
+        script: |
+          flutter build ipa --release
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -118,8 +189,8 @@ workflows:
     publishing:
       app_store_connect:
         api_key: ${APP_STORE_CONNECT_PRIVATE_KEY}
-        key_id: "5Q78MLL5J3"
-        issuer_id: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"
+        key_id: ${APP_STORE_CONNECT_KEY_IDENTIFIER}
+        issuer_id: ${APP_STORE_CONNECT_ISSUER_ID}
         submit_to_testflight: true
         beta_groups:
           - "Internal" 
