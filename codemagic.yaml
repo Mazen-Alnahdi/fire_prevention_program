@@ -12,6 +12,7 @@ workflows:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.mazen.fireprogram"
+        APP_NAME: "Educational Natural Fire program"
         APP_STORE_CONNECT_ISSUER_ID: "e07e7416-7902-48a0-9239-6b66f0ad3cdb"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "5Q78MLL5J3"
         APP_STORE_CONNECT_PRIVATE_KEY: ${APP_STORE_CONNECT_PRIVATE_KEY}
@@ -20,29 +21,41 @@ workflows:
       - name: Set up keychain to be used for code signing
         script: |
           keychain initialize
-      - name: Set up code signing settings
+      - name: Fetch signing files
         script: |
-          # Download signing files
+          # Create a temporary directory for the certificates
+          mkdir -p $CM_BUILD_DIR/certificates
+          
+          # Write the private key to a file
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > $CM_BUILD_DIR/certificates/private_key.p8
+          
+          # Create the provisioning profile if it doesn't exist
+          app-store-connect create-app-store-profile \
+            --bundle-id="$BUNDLE_ID" \
+            --profile-type IOS_APP_STORE \
+            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
+          
+          # Fetch signing files
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --certificate-key=@file:/tmp/certificate.p12 \
-            --api-key-path="5Q78MLL5J3"
+            --api-key-path="$CM_BUILD_DIR/certificates/private_key.p8" \
+            --key-id="$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id="$APP_STORE_CONNECT_ISSUER_ID"
           
-          # Set up signing certificate
+          # Add certificates to keychain
           keychain add-certificates
           
           # Set up code signing settings on Xcode project
-          xcode-project use-profiles
+          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Get Flutter packages
         script: |
           flutter packages pub get
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
