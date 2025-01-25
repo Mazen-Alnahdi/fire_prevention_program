@@ -12,7 +12,7 @@
     <array>
         <string>group.$(BUNDLE_ID)</string>
     </array>
-    <key>aps-environment</key>
-    <string>development</string>
+    <key>com.apple.developer.location.background</key>
+    <true/>
 </dict>
 </plist> 
