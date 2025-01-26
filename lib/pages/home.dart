@@ -3,6 +3,7 @@ import 'package:fire_program/pages/info.dart';
 import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -516,30 +517,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             left: 20,
             child: FloatingActionButton(
               heroTag: "call_fab",
-              onPressed: () async {
-                final phoneNumber = '112';
-
-                // First request permission
-                bool hasPermission = await _requestCallPermission();
-                if (!hasPermission) {
-                  if (mounted) {
-                    _showEmergencyDialog(context);
-                    return;
-                  }
-                }
-
-                try {
-                  final Uri telUrl = Uri.parse('tel:$phoneNumber');
-                  await launchUrl(
-                    telUrl,
-                    mode: LaunchMode.externalApplication,
-                  );
-                } catch (e) {
-                  if (mounted) {
-                    _showEmergencyDialog(context);
-                  }
-                }
-              },
+              onPressed: () => _showEmergencyCallDialog(context),
               backgroundColor: Colors.orange,
               child: const Icon(Icons.phone, color: Colors.white),
             ),
@@ -595,54 +573,54 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future<bool> _requestCallPermission() async {
+  void _showEmergencyCallDialog(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      // First try to get permission status
-      final Uri testUrl = Uri.parse('tel:112');
-      bool hasPermission = await canLaunchUrl(testUrl);
-
-      if (!hasPermission) {
-        // Show permission request dialog
-        bool? userChoice = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: Colors.orange,
-              title: const Text(
-                'طلب إذن',
-                textAlign: TextAlign.right,
-                style: TextStyle(color: Colors.black),
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text('مكالمة طوارئ'),
+            content: const Text('هل تريد الاتصال برقم 112؟'),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('إلغاء'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-              content: const Text(
-                'يحتاج التطبيق إلى إذن لإجراء المكالمات. هل تريد السماح بذلك؟',
-                textAlign: TextAlign.right,
-                style: TextStyle(color: Colors.black),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: const Text('اتصال'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _makeEmergencyCall();
+                },
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child:
-                      const Text('لا', style: TextStyle(color: Colors.black)),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child:
-                      const Text('نعم', style: TextStyle(color: Colors.black)),
-                ),
-              ],
-            );
-          },
-        );
+            ],
+          );
+        },
+      );
+    } else {
+      _makeEmergencyCall();
+    }
+  }
 
-        if (userChoice == true) {
-          // Try again after user agrees
-          hasPermission = await canLaunchUrl(testUrl);
+  Future<void> _makeEmergencyCall() async {
+    const phoneNumber = '112';
+    final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      if (await canLaunchUrl(callUri)) {
+        await launchUrl(callUri);
+      } else {
+        if (mounted) {
+          _showEmergencyDialog(context);
         }
       }
-
-      return hasPermission;
+    } catch (e) {
+      if (mounted) {
+        _showEmergencyDialog(context);
+      }
     }
-    return true; // For non-iOS platforms
   }
 }
 
