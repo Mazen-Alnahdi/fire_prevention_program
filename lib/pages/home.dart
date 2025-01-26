@@ -518,41 +518,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               heroTag: "call_fab",
               onPressed: () async {
                 final phoneNumber = '112';
-                if (defaultTargetPlatform == TargetPlatform.iOS) {
-                  // For iOS, use the standard tel: scheme
-                  final Uri telUrl = Uri(scheme: 'tel', path: phoneNumber);
 
-                  try {
-                    if (await canLaunchUrl(telUrl)) {
-                      await launchUrl(
-                        telUrl,
-                        mode: LaunchMode.externalNonBrowserApplication,
-                      );
-                    } else {
-                      if (mounted) {
-                        _showEmergencyDialog(context);
-                      }
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      _showEmergencyDialog(context);
-                    }
+                // First request permission
+                bool hasPermission = await _requestCallPermission();
+                if (!hasPermission) {
+                  if (mounted) {
+                    _showEmergencyDialog(context);
+                    return;
                   }
-                } else {
-                  // For Android and other platforms
-                  final Uri url = Uri.parse('tel:$phoneNumber');
-                  try {
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url, mode: LaunchMode.platformDefault);
-                    } else {
-                      if (mounted) {
-                        _showEmergencyDialog(context);
-                      }
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      _showEmergencyDialog(context);
-                    }
+                }
+
+                try {
+                  final Uri telUrl = Uri.parse('tel:$phoneNumber');
+                  await launchUrl(
+                    telUrl,
+                    mode: LaunchMode.externalApplication,
+                  );
+                } catch (e) {
+                  if (mounted) {
+                    _showEmergencyDialog(context);
                   }
                 }
               },
@@ -586,11 +570,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         return AlertDialog(
           backgroundColor: Colors.red,
           title: const Text(
-            'خطأ',
+            'تنبيه',
+            textAlign: TextAlign.right,
             style: TextStyle(color: Colors.white),
           ),
           content: const Text(
-            'غير قادر على إجراء المكالمة. يرجى الاتصال بالطوارئ يدويًا على الرقم 112',
+            'يرجى السماح للتطبيق بإجراء المكالمات أو الاتصال يدويًا على الرقم 112',
+            textAlign: TextAlign.right,
             style: TextStyle(color: Colors.white),
           ),
           actions: [
@@ -607,6 +593,56 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         );
       },
     );
+  }
+
+  Future<bool> _requestCallPermission() async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      // First try to get permission status
+      final Uri testUrl = Uri.parse('tel:112');
+      bool hasPermission = await canLaunchUrl(testUrl);
+
+      if (!hasPermission) {
+        // Show permission request dialog
+        bool? userChoice = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.orange,
+              title: const Text(
+                'طلب إذن',
+                textAlign: TextAlign.right,
+                style: TextStyle(color: Colors.black),
+              ),
+              content: const Text(
+                'يحتاج التطبيق إلى إذن لإجراء المكالمات. هل تريد السماح بذلك؟',
+                textAlign: TextAlign.right,
+                style: TextStyle(color: Colors.black),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child:
+                      const Text('لا', style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child:
+                      const Text('نعم', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (userChoice == true) {
+          // Try again after user agrees
+          hasPermission = await canLaunchUrl(testUrl);
+        }
+      }
+
+      return hasPermission;
+    }
+    return true; // For non-iOS platforms
   }
 }
 
