@@ -71,5 +71,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>aps-environment</key>
+    <string>development</string>
+    <key>UIRequiresPersistentWiFi</key>
+    <false/>
 </dict>
 </plist>

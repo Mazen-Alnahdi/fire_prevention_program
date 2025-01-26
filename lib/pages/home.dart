@@ -517,42 +517,52 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: FloatingActionButton(
               heroTag: "call_fab",
               onPressed: () async {
-                // Format the phone number with proper URI encoding
-                final Uri url = Uri.parse('tel:${Uri.encodeComponent('112')}');
-                try {
-                  if (defaultTargetPlatform == TargetPlatform.iOS) {
-                    // For iOS, use URLScheme with external application mode
+                final phoneNumber = '112';
+                if (defaultTargetPlatform == TargetPlatform.iOS) {
+                  // For iOS, try multiple URL schemes in order of preference
+                  final List<String> urlSchemes = [
+                    'telprompt://$phoneNumber', // iOS preferred scheme for confirmation dialog
+                    'tel://$phoneNumber', // Secondary scheme
+                    'tel:$phoneNumber' // Fallback scheme
+                  ];
+
+                  bool launched = false;
+                  for (final scheme in urlSchemes) {
+                    if (!launched) {
+                      try {
+                        final url = Uri.parse(scheme);
+                        if (await canLaunchUrl(url)) {
+                          launched = await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                          if (launched) break;
+                        }
+                      } catch (e) {
+                        // Continue to next scheme
+                        continue;
+                      }
+                    }
+                  }
+
+                  if (!launched && mounted) {
+                    _showEmergencyDialog(context);
+                  }
+                } else {
+                  // For Android and other platforms
+                  final Uri url = Uri.parse('tel:$phoneNumber');
+                  try {
                     if (await canLaunchUrl(url)) {
-                      await launchUrl(url,
-                          mode: LaunchMode.externalApplication);
+                      await launchUrl(url, mode: LaunchMode.platformDefault);
                     } else {
                       if (mounted) {
                         _showEmergencyDialog(context);
                       }
                     }
-                  } else {
-                    // For Android, try both launch modes
-                    bool launched = false;
-                    try {
-                      launched = await launchUrl(url,
-                          mode: LaunchMode.externalNonBrowserApplication);
-                    } catch (e) {
-                      // If external mode fails, try platform default
-                      try {
-                        launched = await launchUrl(url,
-                            mode: LaunchMode.platformDefault);
-                      } catch (e) {
-                        launched = false;
-                      }
-                    }
-
-                    if (!launched && mounted) {
+                  } catch (e) {
+                    if (mounted) {
                       _showEmergencyDialog(context);
                     }
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    _showEmergencyDialog(context);
                   }
                 }
               },

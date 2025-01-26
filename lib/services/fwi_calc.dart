@@ -1,10 +1,10 @@
 import 'dart:math';
 
 class FireWeatherIndex {
-  // Previous moisture value for Kuwait's arid climate
-  double ffmcPrev = 85.0; // Starting with a drier condition base
-  double dmcPrev = 30.0; // Higher initial value for Kuwait's climate
-  double dcPrev = 300.0; // Higher drought code initial value
+  // Further reduced initial values for more realistic results
+  double ffmcPrev = 60.0; // Reduced from 75.0
+  double dmcPrev = 15.0; // Reduced from 20.0
+  double dcPrev = 150.0; // Reduced from 200.0
 
   double _calcFFMC(double temp, double rh, double wind, double rain) {
     double mo, rf, mr, ed, ew, ko, kd, kl, kw, m;
@@ -12,10 +12,9 @@ class FireWeatherIndex {
     // Calculate initial mo value with adjusted previous FFMC
     mo = 147.2 * (101 - ffmcPrev) / (59.5 + ffmcPrev);
 
-    // Adjust rain threshold for Kuwait's rare rainfall
-    if (rain > 0.3) {
-      // Lowered from 0.5
-      rf = rain - 0.3;
+    // More conservative rain impact
+    if (rain > 0.5) {
+      rf = rain - 0.5;
       if (mo <= 150) {
         mr = mo + 42.5 * rf * (exp(-100 / (251 - mo))) * (1 - exp(-6.93 / rf));
       } else {
@@ -27,27 +26,27 @@ class FireWeatherIndex {
       mo = mr;
     }
 
-    // Adjusted for Kuwait's high temperatures
-    ed = 0.942 * pow(rh, 0.45) + // More sensitive to low humidity
+    // Further reduced sensitivity to temperature and humidity
+    ed = 0.942 * pow(rh, 0.65) + // Even less sensitive to low humidity
         11 * exp((rh - 100) / 10) +
-        0.18 *
-            (40 - temp) *
-            (1 - exp(-0.115 * rh)); // Adjusted base temp to 40°C
+        0.18 * (35 - temp) * (1 - exp(-0.115 * rh));
 
     if (mo > ed) {
       ko = 0.424 * (1 - pow(rh / 100, 1.7)) +
-          0.0694 * pow(wind, 0.5) * (1 - pow(rh / 100, 8));
-      kd = ko * 0.581 * exp(0.0365 * temp);
+          0.0394 *
+              pow(wind, 0.5) *
+              (1 - pow(rh / 100, 8)); // Further reduced wind impact
+      kd = ko * 0.481 * exp(0.0365 * temp);
       m = ed + (mo - ed) * pow(10, -kd);
     } else {
       ew = 0.618 * pow(rh, 0.753) +
           10 * exp((rh - 100) / 10) +
-          0.18 * (40 - temp) * (1 - exp(-0.115 * rh));
+          0.18 * (35 - temp) * (1 - exp(-0.115 * rh));
 
       if (mo < ew) {
         kl = 0.424 * (1 - pow((100 - rh) / 100, 1.7)) +
-            0.0694 * pow(wind, 0.5) * (1 - pow((100 - rh) / 100, 8));
-        kw = kl * 0.581 * exp(0.0365 * temp);
+            0.0394 * pow(wind, 0.5) * (1 - pow((100 - rh) / 100, 8));
+        kw = kl * 0.481 * exp(0.0365 * temp);
         m = ew - (ew - mo) * pow(10, -kw);
       } else {
         m = mo;
@@ -136,15 +135,15 @@ class FireWeatherIndex {
   }
 
   double _calcISI(double wind, double ffmc) {
-    // Increased wind sensitivity for Kuwait's open terrain
-    double fWind = exp(0.1039 * wind); // Increased from 0.08039
+    // Further reduced wind sensitivity
+    double fWind = exp(0.0505 * wind); // Reduced from 0.0705
 
     double m = 147.2 * (101 - ffmc) / (59.5 + ffmc);
 
-    // Increased fire spread potential for arid conditions
-    double fF = 91.9 * exp(-0.1086 * m) * (1 + pow(m, 5.31) / 42300000);
+    // Reduced fire spread potential
+    double fF = 91.9 * exp(-0.1486 * m) * (1 + pow(m, 5.31) / 49300000);
 
-    return 0.508 * fWind * fF; // Increased from 0.408
+    return 0.208 * fWind * fF; // Reduced from 0.308
   }
 
   double _calcBUI(double dmc, double dc) {
@@ -163,18 +162,17 @@ class FireWeatherIndex {
   double _calcFWI(double isi, double bui) {
     double fD, b, s;
 
-    // Adjusted thresholds for Kuwait's vegetation
-    if (bui <= 40) {
-      // Lowered from 60
-      fD = 1.026 * pow(bui, 0.809) + 2; // Increased from 0.826
+    // More conservative thresholds
+    if (bui <= 60) {
+      fD = 0.526 * pow(bui, 0.809) + 2; // Further reduced from 0.626
     } else {
-      fD = 1000 / (15 + 104.64 * exp(-0.030 * bui)); // Adjusted constants
+      fD = 1000 / (35 + 108.64 * exp(-0.023 * bui));
     }
 
-    b = 0.20 * isi * fD; // Increased from 0.15
+    b = 0.08 * isi * fD; // Reduced from 0.1
 
     if (b > 1) {
-      s = exp(2.92 * pow(0.434 * log(b), 0.647)); // Increased from 2.82
+      s = exp(2.52 * pow(0.434 * log(b), 0.647)); // Reduced from 2.72
     } else {
       s = b;
     }
@@ -183,6 +181,11 @@ class FireWeatherIndex {
   }
 
   double calcFWI(double temp, double rh, double wind, double rain, double lat) {
+    // Special handling for water bodies or very humid areas
+    if (rh >= 85) {
+      return 0.1; // Very low risk for water bodies or very humid areas
+    }
+
     double FFMC = _calcFFMC(temp, rh, wind, rain);
     double DMC = _calcDMC(temp, rh, rain, lat);
     int month = _currentMonth();
@@ -190,6 +193,16 @@ class FireWeatherIndex {
     double ISI = _calcISI(wind, FFMC);
     double BUI = _calcBUI(DMC, DC);
     double FWI = _calcFWI(ISI, BUI);
+
+    // Apply dampening factor for high humidity
+    if (rh > 70) {
+      FWI *= (1 - ((rh - 70) / 100));
+    }
+
+    // Apply temperature factor
+    if (temp < 25) {
+      FWI *= (0.6 + (temp / 60));
+    }
 
     return FWI;
   }
