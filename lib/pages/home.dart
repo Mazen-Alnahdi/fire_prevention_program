@@ -519,34 +519,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               onPressed: () async {
                 final phoneNumber = '112';
                 if (defaultTargetPlatform == TargetPlatform.iOS) {
-                  // For iOS, try multiple URL schemes in order of preference
-                  final List<String> urlSchemes = [
-                    'telprompt://$phoneNumber', // iOS preferred scheme for confirmation dialog
-                    'tel://$phoneNumber', // Secondary scheme
-                    'tel:$phoneNumber' // Fallback scheme
-                  ];
-
-                  bool launched = false;
-                  for (final scheme in urlSchemes) {
-                    if (!launched) {
-                      try {
-                        final url = Uri.parse(scheme);
-                        if (await canLaunchUrl(url)) {
-                          launched = await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
-                          );
-                          if (launched) break;
-                        }
-                      } catch (e) {
-                        // Continue to next scheme
-                        continue;
+                  final Uri url = Uri.parse('tel:$phoneNumber');
+                  try {
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    } else {
+                      if (mounted) {
+                        _showEmergencyDialog(context);
                       }
                     }
-                  }
-
-                  if (!launched && mounted) {
-                    _showEmergencyDialog(context);
+                  } catch (e) {
+                    if (mounted) {
+                      _showEmergencyDialog(context);
+                    }
                   }
                 } else {
                   // For Android and other platforms
