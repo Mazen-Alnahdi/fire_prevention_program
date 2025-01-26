@@ -32,6 +32,46 @@ class _CalcState extends State<Calc> {
   String result = "";
   bool isDescriptionVisible = false;
 
+  bool _validateFields() {
+    return tempText.text.isNotEmpty &&
+           rhText.text.isNotEmpty &&
+           windText.text.isNotEmpty &&
+           rainText.text.isNotEmpty &&
+           latText.text.isNotEmpty;
+  }
+
+  void _showEmptyFieldsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.red,
+          title: const Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          content: const Text(
+            'يرجى ملء جميع الحقول المطلوبة',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'حسناً',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _setData() {
     setState(() {
       tempData = _parseToDouble(tempText.text.trim());
@@ -318,21 +358,25 @@ class _CalcState extends State<Calc> {
                             ),
                           ),
                           onPressed: () {
-                            setState(() {
-                              _setData();
-                              FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
-                              if (FWI! < 5.2) {
-                                result = "هو خطر منخفض جدًا";
-                              } else if (FWI! >= 5.2 && FWI! < 11.2) {
-                                result = "هو خطر منخفض";
-                              } else if (FWI! >= 11.2 && FWI! < 21.3) {
-                                result = "هو خطر معتدل";
-                              } else if (FWI! >= 21.3 && FWI! < 38.0) {
-                                result = "هو خطر كبير";
-                              } else if (FWI! >= 38.0) {
-                                result = "هو خطر كبير جدًا";
-                              }
-                            });
+                            if (_validateFields()) {
+                              setState(() {
+                                _setData();
+                                FWI = fwi.calcFWI(tempData, rhData, windData, rainData, latData);
+                                if (FWI! < 3.0) {
+                                  result = "هو خطر منخفض جدًا";
+                                } else if (FWI! >= 3.0 && FWI! < 7.0) {
+                                  result = "هو خطر منخفض";
+                                } else if (FWI! >= 7.0 && FWI! < 15.0) {
+                                  result = "هو خطر معتدل";
+                                } else if (FWI! >= 15.0 && FWI! < 25.0) {
+                                  result = "هو خطر كبير";
+                                } else if (FWI! >= 25.0) {
+                                  result = "هو خطر كبير جدًا";
+                                }
+                              });
+                            } else {
+                              _showEmptyFieldsDialog();
+                            }
                           },
                           child: const Text(
                             'الحساب',
@@ -385,11 +429,15 @@ class _CalcState extends State<Calc> {
                             ),
                           ),
                           onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoDialog(fwi: FWI ?? 0.0);
-                                });
+                            if (_validateFields()) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoDialog(fwi: FWI ?? 0.0);
+                                  });
+                            } else {
+                              _showEmptyFieldsDialog();
+                            }
                           },
                           child: const Text(
                             'عرض المعلومات',

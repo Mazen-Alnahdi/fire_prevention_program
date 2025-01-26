@@ -18,7 +18,7 @@ class InfoDialog extends StatelessWidget {
     String lowFWI =
         "عندما يكون مؤشر الطقس الحرائق منخفضًا، هناك فرصة ضئيلة لاندلاع حريق وغالبًا ما يكون من السهل إطفاؤه. درجات الحرارة الباردة، الرطوبة العالية، الرياح الخفيفة أو العدم، بالإضافة إلى القليل من الأمطار، تجعل من غير المحتمل أن يبدأ حريق، وإذا حدث، يكون من السهل إخماده. لتقليل مؤشر الطقس الحرائق، يوصى باستخدام الطلاءات المنتفخة، المثبطات البورونية، أو المثبطات الهلامية.";
 
-    String medFWI=
+    String medFWI =
         "عندما يكون مؤشر الطقس الحرائق متوسطًا، فإن خطر الحريق معتدل، مع زيادة في خطر الاشتعال والانتشار بسبب درجات الحرارة الدافئة، والرطوبة المعتدلة، والرياح القوية، وفترات الجفاف. الطلاءات المنتفخة، المثبطات الهلامية، والمثبطات التجارية هي الطلاءات المناسبة لتقليل خطر الحريق.";
 
     String highFWI =
@@ -32,23 +32,23 @@ class InfoDialog extends StatelessWidget {
     Color med = Colors.orange;
     Color high = Colors.red;
 
-    if (fwi < 5.2) {
+    if (fwi < 3.0) {
       result = "هو خطر منخفض جدًا";
       bodyText = lowFWI;
       selectedColor = low;
-    } else if (fwi >= 5.2 && fwi < 11.2) {
+    } else if (fwi >= 3.0 && fwi < 7.0) {
       result = "هو خطر منخفض";
       bodyText = lowFWI;
       selectedColor = low;
-    } else if (fwi >= 11.2 && fwi < 21.3) {
+    } else if (fwi >= 7.0 && fwi < 15.0) {
       result = "هو خطر معتدل";
       bodyText = medFWI;
       selectedColor = med;
-    } else if (fwi >= 21.3 && fwi < 38.0) {
+    } else if (fwi >= 15.0 && fwi < 25.0) {
       result = "هو خطر كبير";
       bodyText = highFWI;
       selectedColor = high;
-    } else if (fwi >= 38.0) {
+    } else if (fwi >= 25.0) {
       result = "هو خطر كبير جدًا";
       bodyText = highFWI;
       selectedColor = high;
@@ -113,10 +113,8 @@ class InfoDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Info())
-                      );
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Info()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: selectedColor,

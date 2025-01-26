@@ -29,7 +29,9 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
   LatLng? selectedLocation; // Store the selected location
   String? address; // Store the reverse-geocoded address
   double? temp, rh, wind, rain; // Store the FFMC values to calc
@@ -38,11 +40,57 @@ class _HomeState extends State<Home> {
   String result = "";
   final MapController _mapController = MapController();
   Country? selectedCountry = countries.isNotEmpty ? countries[0] : null;
+  bool isResultsVisible = true; // Add state for results visibility
 
   final String key = dotenv.env["API_KEY"]!;
   final String user_agent = dotenv.env["USER_AGENT"]!;
 
+  // Add new variables for risk areas
+  final List<LatLng> highRiskAreas = [
+    LatLng(29.5796, 47.8232), // Sabah Al-Ahmad Natural Reserve
+    LatLng(29.3954, 47.5948), // Al-Shagaya Reserve
+    LatLng(29.2270, 47.8790), // Um Al-Qaren Reserve
+    LatLng(29.0471, 48.0253), // Mubarak Al-Kabeer Reserve
+    LatLng(29.1750, 47.48166), // Al-Sulaibiya
+  ];
+
+  Color _getRiskColor(double fwi) {
+    if (fwi >= 25.0) return Colors.red.withOpacity(0.7);
+    if (fwi >= 15.0) return Colors.orange.withOpacity(0.7);
+    if (fwi >= 7.0) return Colors.yellow.withOpacity(0.7);
+    if (fwi >= 3.0) return Colors.green.withOpacity(0.7);
+    return Colors.blue.withOpacity(0.7);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   Future<void> fetchAddressFromCoordinates(LatLng coords) async {
+    // Show modal and start animation when fetching data
+    setState(() {
+      isResultsVisible = true;
+    });
+    _animationController.forward();
+
     final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json');
 
@@ -78,15 +126,15 @@ class _HomeState extends State<Home> {
 
           FWI =
               fwi.calcFWI(temp!, rh!, wind!, rain!, selectedLocation!.latitude);
-          if (FWI! < 5.2) {
+          if (FWI! < 3.0) {
             result = "خطر منخفض جدًا";
-          } else if (FWI! >= 5.2 && FWI! < 11.2) {
+          } else if (FWI! >= 3.0 && FWI! < 7.0) {
             result = "خطر منخفض";
-          } else if (FWI! >= 11.2 && FWI! < 21.3) {
+          } else if (FWI! >= 7.0 && FWI! < 15.0) {
             result = "خطر معتدل";
-          } else if (FWI! >= 21.3 && FWI! < 38.0) {
+          } else if (FWI! >= 15.0 && FWI! < 25.0) {
             result = "خطر كبير";
-          } else if (FWI! >= 38.0) {
+          } else if (FWI! >= 25.0) {
             result = "خطر كبير جدًا";
           }
         });
@@ -216,14 +264,13 @@ class _HomeState extends State<Home> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter:
-                  const LatLng(29.3757, 47.9773), // Default to Kuwait City
-              initialZoom: 13.0,
+              initialCenter: const LatLng(29.3757, 47.9773),
+              initialZoom: 9.0, // Zoomed out to show more area
               onTap: (tapPosition, point) async {
                 setState(() {
                   selectedLocation = point;
                 });
-                await fetchAddressFromCoordinates(point); // Fetch the address
+                await fetchAddressFromCoordinates(point);
               },
             ),
             children: [
@@ -233,15 +280,28 @@ class _HomeState extends State<Home> {
                 maxZoom: 19,
                 tileProvider: NetworkTileProvider(),
               ),
+              // Add circles for high-risk areas
+              CircleLayer(
+                circles: highRiskAreas.map((location) {
+                  return CircleMarker(
+                    point: location,
+                    radius: 2000, // 2km radius
+                    useRadiusInMeter: true,
+                    color: Colors.red.withOpacity(0.3),
+                    borderColor: Colors.red,
+                    borderStrokeWidth: 2,
+                  );
+                }).toList(),
+              ),
               if (selectedLocation != null)
                 MarkerLayer(
                   markers: [
                     Marker(
                       point: selectedLocation!,
-                      child: const Icon(
-                        Icons.location_on, // A default location icon
-                        color: Colors.red, // Red color for the marker
-                        size: 40, // Set the size of the icon
+                      child: Icon(
+                        Icons.location_on,
+                        color: FWI != null ? _getRiskColor(FWI!) : Colors.red,
+                        size: 40,
                       ),
                     ),
                   ],
@@ -317,80 +377,121 @@ class _HomeState extends State<Home> {
           ),
           if (selectedLocation != null)
             Positioned(
-              bottom: 100,
+              bottom: MediaQuery.of(context).padding.bottom + 100,
               left: 20,
               right: 20,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                color: Colors.orange,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (address != null) ...[
-                      const Text(
-                        "احتمال نشوب حريق اليوم هو",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      Text(
-                        result,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildInfoTile("درجة الحرارة", "$temp\u00b0C"),
-                          _buildInfoTile("رطوبة", "$rh%"),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildInfoTile("رياح", "${wind}kph"),
-                          _buildInfoTile("مطر", "${rain}mm"),
-                        ],
-                      ),
-                      _buildInfoTile("العنوان", address ?? ""),
-                      TextButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => InfoDialog(fwi: FWI ?? 0.0),
-                          );
-                        },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.white),
-                          foregroundColor:
-                              MaterialStateProperty.all(Colors.black),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Visibility(
+                  visible: isResultsVisible,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    color: Colors.orange,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon:
+                                  const Icon(Icons.close, color: Colors.black),
+                              onPressed: () {
+                                _animationController.reverse().then((_) {
+                                  setState(() {
+                                    isResultsVisible = false;
+                                  });
+                                });
+                              },
+                            ),
+                            const Text(
+                              "احتمال نشوب حريق اليوم هو",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(
+                                width: 48), // Balance the close button
+                          ],
+                        ),
+                        if (address != null) ...[
+                          Text(
+                            result,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildInfoTile("درجة الحرارة", "$temp\u00b0C"),
+                              _buildInfoTile("رطوبة", "$rh%"),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildInfoTile("رياح", "${wind}kph"),
+                              _buildInfoTile("مطر", "${rain}mm"),
+                            ],
+                          ),
+                          _buildInfoTile("العنوان", address ?? ""),
+                          TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    InfoDialog(fwi: FWI ?? 0.0),
+                              );
+                            },
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.black),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 32,
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'عرض المعلومات',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          padding: MaterialStateProperty.all(
-                            const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 32,
-                            ),
-                          ),
-                        ),
-                        child: const Text(
-                          'عرض المعلومات',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
+          if (!isResultsVisible && selectedLocation != null)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 100,
+              right: 20,
+              child: FloatingActionButton(
+                heroTag: "show_results_fab",
+                onPressed: () {
+                  setState(() {
+                    isResultsVisible = true;
+                  });
+                  _animationController.forward();
+                },
+                backgroundColor: Colors.orange,
+                child: const Icon(Icons.visibility, color: Colors.white),
+              ),
+            ),
           Positioned(
-            bottom: 70,
+            bottom: MediaQuery.of(context).padding.bottom + 20,
             right: 20,
             child: FloatingActionButton(
               heroTag: "location_fab",
@@ -411,45 +512,47 @@ class _HomeState extends State<Home> {
             ),
           ),
           Positioned(
-            bottom: 70,
+            bottom: MediaQuery.of(context).padding.bottom + 20,
             left: 20,
             child: FloatingActionButton(
               heroTag: "call_fab",
               onPressed: () async {
-                const emergencyNumber = 'tel:112';
-                final Uri url = Uri.parse(emergencyNumber);
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  // Show error dialog if unable to make call
+                // Format the phone number with proper URI encoding
+                final Uri url = Uri.parse('tel:${Uri.encodeComponent('112')}');
+                try {
+                  if (defaultTargetPlatform == TargetPlatform.iOS) {
+                    // For iOS, use URLScheme with external application mode
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      if (mounted) {
+                        _showEmergencyDialog(context);
+                      }
+                    }
+                  } else {
+                    // For Android, try both launch modes
+                    bool launched = false;
+                    try {
+                      launched = await launchUrl(url,
+                          mode: LaunchMode.externalNonBrowserApplication);
+                    } catch (e) {
+                      // If external mode fails, try platform default
+                      try {
+                        launched = await launchUrl(url,
+                            mode: LaunchMode.platformDefault);
+                      } catch (e) {
+                        launched = false;
+                      }
+                    }
+
+                    if (!launched && mounted) {
+                      _showEmergencyDialog(context);
+                    }
+                  }
+                } catch (e) {
                   if (mounted) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.red,
-                          title: const Text(
-                            'خطأ',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          content: const Text(
-                            'غير قادر على إجراء المكالمة. يرجى الاتصال بالطوارئ يدويًا على الرقم 112',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text(
-                                'حسناً',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    _showEmergencyDialog(context);
                   }
                 }
               },
@@ -473,6 +576,36 @@ class _HomeState extends State<Home> {
           overflow: TextOverflow.visible,
         ),
       ),
+    );
+  }
+
+  void _showEmergencyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.red,
+          title: const Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            'غير قادر على إجراء المكالمة. يرجى الاتصال بالطوارئ يدويًا على الرقم 112',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'حسناً',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
