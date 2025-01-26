@@ -16,11 +16,12 @@ class _DashBoardState extends State<DashBoard> {
   Color backIcon = Colors.white;
   Color selectIcon = const Color.fromRGBO(255, 75, 0, 100);
   Color backgroundColor = Colors.white;
-  final PageController _pageController = PageController(initialPage: 1); // PageController for smooth transitions
+  final PageController _pageController =
+      PageController(initialPage: 1); // PageController for smooth transitions
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       const Calc(),
       const Home(),
       // const Info(),
@@ -31,33 +32,35 @@ class _DashBoardState extends State<DashBoard> {
       extendBody: true, // Allows the body to extend under the BottomAppBar
       body: PageView(
         controller: _pageController, // Connect PageView with PageController
-        children: _pages,
+        children: pages,
         onPageChanged: (index) {
           setState(() {
             _currentIndex = index; // Update currentIndex when page is swiped
           });
         },
-        physics: const NeverScrollableScrollPhysics(), // Disables swipe gestures
+        physics:
+            const NeverScrollableScrollPhysics(), // Disables swipe gestures
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Visibility(
-        visible: MediaQuery.of(context).viewInsets.bottom==0.0,
-          child: FloatingActionButton(
-            backgroundColor: Colors.white,
-            onPressed: () {
-              setState(() {
-                _currentIndex = 1; // Set to the Home page
-              });
-              _pageController.animateToPage(1, // Animate to the Home page
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut);
-            },
-            shape: const CircleBorder(),
-            child: Icon(
-              Icons.home_outlined,
-              color: selectIcon,
-            ),
+        visible: MediaQuery.of(context).viewInsets.bottom == 0.0,
+        child: FloatingActionButton(
+          heroTag: "home_fab",
+          backgroundColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _currentIndex = 1; // Set to the Home page
+            });
+            _pageController.animateToPage(1, // Animate to the Home page
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut);
+          },
+          shape: const CircleBorder(),
+          child: Icon(
+            Icons.home_outlined,
+            color: selectIcon,
           ),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
@@ -81,7 +84,8 @@ class _DashBoardState extends State<DashBoard> {
                 color: selectIcon,
               ),
             ),
-            const SizedBox(width: 40), // Adds space for the floating action button
+            const SizedBox(
+                width: 40), // Adds space for the floating action button
             IconButton(
               onPressed: () {
                 setState(() {

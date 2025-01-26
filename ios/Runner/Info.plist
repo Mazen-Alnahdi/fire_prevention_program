@@ -3,11 +3,16 @@
 <plist version="1.0">
 <dict>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs access to location when open to show nearby fire incidents and emergency resources.</string>
+    <string>This app needs access to location to determine fire risk in your area and provide accurate emergency services.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>This app needs access to location to provide real-time updates about nearby fire incidents and emergency resources, even when the app is in the background.</string>
+    <key>NSLocationTemporaryUsageDescriptionDictionary</key>
+    <dict>
+        <key>LocationAccuracy</key>
+        <string>The app requires temporary access to precise location to accurately assess fire risks in your immediate area.</string>
+    </dict>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UIBackgroundModes</key>
@@ -41,6 +46,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

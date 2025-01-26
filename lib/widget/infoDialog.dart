@@ -32,12 +32,6 @@ class InfoDialog extends StatelessWidget {
     Color med = Colors.orange;
     Color high = Colors.red;
 
-    if(fwi==null){
-      result = "هو خطر منخفض جدًا";
-      bodyText = lowFWI;
-      selectedColor = low;
-    }
-
     if (fwi < 5.2) {
       result = "هو خطر منخفض جدًا";
       bodyText = lowFWI;
@@ -74,15 +68,15 @@ class InfoDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.local_fire_department_rounded,
               color: Colors.white,
               size: 80.0,
             ),
             const SizedBox(height: 16),
             Text(
-              "مؤشر الطقس الحرائق: ${result}",
-              style: TextStyle(
+              "مؤشر الطقس الحرائق: $result",
+              style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -109,13 +103,13 @@ class InfoDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "إغلاق النافذة",
-                      style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                      style: TextStyle(color: Colors.white, fontSize: 12.0),
                     ),
                   ),
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
@@ -130,9 +124,9 @@ class InfoDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "مزيد من المعلومات",
-                      style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                      style: TextStyle(color: Colors.white, fontSize: 12.0),
                     ),
                   ),
                 ),

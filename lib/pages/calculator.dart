@@ -102,7 +102,7 @@ class _CalcState extends State<Calc> {
                     child: Text(
                       helper,
                       textAlign: TextAlign.right,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ),
                   filled: true,
@@ -277,7 +277,7 @@ class _CalcState extends State<Calc> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 20.0),
@@ -344,7 +344,7 @@ class _CalcState extends State<Calc> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 20.0),
@@ -401,7 +401,7 @@ class _CalcState extends State<Calc> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                   ],
                 ),
               ],

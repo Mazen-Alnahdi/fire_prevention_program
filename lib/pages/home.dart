@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fire_program/pages/info.dart';
 import 'package:fire_program/services/fwi_calc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,9 +34,9 @@ class _HomeState extends State<Home> {
   String? address; // Store the reverse-geocoded address
   double? temp, rh, wind, rain; // Store the FFMC values to calc
   double? FWI;
-  FireWeatherIndex fwi = new FireWeatherIndex();
+  FireWeatherIndex fwi = FireWeatherIndex();
   String result = "";
-  MapController _mapController = MapController();
+  final MapController _mapController = MapController();
   Country? selectedCountry = countries.isNotEmpty ? countries[0] : null;
 
   final String key = dotenv.env["API_KEY"]!;
@@ -61,7 +62,7 @@ class _HomeState extends State<Home> {
     }
 
     final url2 = Uri.parse(
-        "https://api.weatherapi.com/v1/current.json?q=${coords.latitude}%2C%20${coords.longitude}&key=${key}");
+        "https://api.weatherapi.com/v1/current.json?q=${coords.latitude}%2C%20${coords.longitude}&key=$key");
 
     try {
       final response = await http.get(url2);
@@ -119,8 +120,8 @@ class _HomeState extends State<Home> {
       // Show dialog if location services are disabled
       _showLocationDialog(
         context,
-        'Location Service Disabled',
-        'Please enable location services to proceed.',
+        'خدمة الموقع معطلة',
+        'يرجى تمكين خدمات الموقع للمتابعة.',
       );
       return Future.error('Location services are disabled.');
     }
@@ -133,8 +134,8 @@ class _HomeState extends State<Home> {
         // Show dialog if permissions are denied
         _showLocationDialog(
           context,
-          'Location Permission Denied',
-          'Please grant location permissions to proceed.',
+          'تم رفض إذن الموقع',
+          'يرجى منح أذونات الموقع للمتابعة.',
         );
         return Future.error('Location permissions are denied');
       }
@@ -144,14 +145,23 @@ class _HomeState extends State<Home> {
       // Show dialog if permissions are permanently denied
       _showLocationDialog(
         context,
-        'Location Permission Permanently Denied',
-        'Location permissions are permanently denied. Please enable them in the app settings.',
+        'تم رفض إذن الموقع بشكل دائم',
+        'أذونات الموقع مرفوضة بشكل دائم. يرجى تمكينها في إعدادات التطبيق.',
       );
       return Future.error('Location permissions are permanently denied.');
     }
 
+    // Request temporary full accuracy for iOS
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await Geolocator.requestTemporaryFullAccuracy(
+        purposeKey: "LocationAccuracy",
+      );
+    }
+
     // If everything is fine, return the current position
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
   }
 
   void _showLocationDialog(BuildContext context, String title, String message) {
@@ -160,21 +170,29 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.red,
-          title: Text(title,style: TextStyle(color: Colors.white),),
-          content: Text(message,style: TextStyle(color: Colors.white),),
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.white),
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('OK',style: TextStyle(color: Colors.white),),
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -308,172 +326,65 @@ class _HomeState extends State<Home> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Theme(
-                      data: Theme.of(context)
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        backgroundColor: Colors.transparent,
-                        collapsedBackgroundColor: Colors.transparent,
-                        title: Column(
-                          children: [
-                            if (address != null)
-                              const Text(
-                                "احتمال نشوب حريق اليوم هو",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.black),
-                                softWrap:
-                                    true, // Ensures the text wraps if it’s too long
-                              ),
-                            Text(
-                              "$result",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.black),
-                              softWrap:
-                                  true, // Ensures the text wraps if it’s too long
-                              overflow: TextOverflow
-                                  .visible, // Prevents text overflow
-                            ),
-                          ],
-                        ),
+                    if (address != null) ...[
+                      const Text(
+                        "احتمال نشوب حريق اليوم هو",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Text(
+                        result,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Flexible(
-                                    child: ListTile(
-                                      title: Text(
-                                        "درجة الحرارة\n${temp}\u00b0C",
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                      title: Text(
-                                        "رطوبة\n${rh}%",
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Flexible(
-                                    child: ListTile(
-                                      title: Text(
-                                        "رياح\n${wind}kph",
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                      title: Text(
-                                        "مطر\n${rain}mm",
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Center(
-                                child: ListTile(
-                                  title: Text(
-                                    'العنوان: $address',
-                                    style: const TextStyle(color: Colors.black),
-                                    textAlign: TextAlign.center,
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20.0),
-                                child: TextButton(
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        WidgetStateProperty.resolveWith<Color>(
-                                      (Set<WidgetState> states) {
-                                        if (states
-                                            .contains(WidgetState.pressed)) {
-                                          return Colors.white;
-                                        }
-                                        return Colors.white;
-                                      },
-                                    ),
-                                    foregroundColor:
-                                        WidgetStateProperty.all<Color>(
-                                            Colors.black),
-                                    shape: WidgetStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                    ),
-                                    padding:
-                                        WidgetStateProperty.all<EdgeInsets>(
-                                      const EdgeInsets.symmetric(
-                                          vertical: 16, horizontal: 32),
-                                    ),
-                                    minimumSize: WidgetStateProperty.all<Size>(
-                                      const Size(200, 50),
-                                    ),
-                                    elevation:
-                                        WidgetStateProperty.resolveWith<double>(
-                                      (Set<WidgetState> states) {
-                                        if (states
-                                            .contains(WidgetState.pressed)) {
-                                          return 6;
-                                        }
-                                        return 3;
-                                      },
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoDialog(fwi: FWI ?? 0.0);
-                                        });
-                                  },
-                                  child: const Text(
-                                    'عرض المعلومات',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          _buildInfoTile("درجة الحرارة", "$temp\u00b0C"),
+                          _buildInfoTile("رطوبة", "$rh%"),
                         ],
                       ),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildInfoTile("رياح", "${wind}kph"),
+                          _buildInfoTile("مطر", "${rain}mm"),
+                        ],
+                      ),
+                      _buildInfoTile("العنوان", address ?? ""),
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => InfoDialog(fwi: FWI ?? 0.0),
+                          );
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.black),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 32,
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          'عرض المعلومات',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -482,18 +393,16 @@ class _HomeState extends State<Home> {
             bottom: 70,
             right: 20,
             child: FloatingActionButton(
+              heroTag: "location_fab",
               onPressed: () async {
-                // Get the user's current location
                 final position = await _determinePosition(context);
-                final LatLng userLocation = LatLng(
+                final userLocation = LatLng(
                   position.latitude,
                   position.longitude,
                 );
-
                 setState(() {
                   selectedLocation = userLocation;
                 });
-
                 _mapController.move(userLocation, 10.0);
                 await fetchAddressFromCoordinates(userLocation);
               },
@@ -505,17 +414,64 @@ class _HomeState extends State<Home> {
             bottom: 70,
             left: 20,
             child: FloatingActionButton(
-              onPressed: () {
-                // Simulate a call to 911
+              heroTag: "call_fab",
+              onPressed: () async {
                 const emergencyNumber = 'tel:112';
-                launchUrl(Uri.parse(emergencyNumber));
+                final Uri url = Uri.parse(emergencyNumber);
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  // Show error dialog if unable to make call
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.red,
+                          title: const Text(
+                            'خطأ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          content: const Text(
+                            'غير قادر على إجراء المكالمة. يرجى الاتصال بالطوارئ يدويًا على الرقم 112',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                'حسناً',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                }
               },
               backgroundColor: Colors.orange,
               child: const Icon(Icons.phone, color: Colors.white),
             ),
           ),
-
         ],
+      ),
+    );
+  }
+
+  Widget _buildInfoTile(String label, String value) {
+    return Flexible(
+      child: ListTile(
+        title: Text(
+          "$label\n$value",
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.black),
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
       ),
     );
   }

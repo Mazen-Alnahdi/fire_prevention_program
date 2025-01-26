@@ -6,11 +6,11 @@ class newTemplate extends StatelessWidget {
   final String imgURL;
 
   const newTemplate({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.imgURL,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
