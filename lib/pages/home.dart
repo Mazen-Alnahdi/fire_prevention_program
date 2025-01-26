@@ -519,11 +519,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               onPressed: () async {
                 final phoneNumber = '112';
                 if (defaultTargetPlatform == TargetPlatform.iOS) {
-                  final Uri url = Uri.parse('telprompt:$phoneNumber');
+                  // For iOS, use the standard tel: scheme
+                  final Uri telUrl = Uri(scheme: 'tel', path: phoneNumber);
+
                   try {
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url,
-                          mode: LaunchMode.externalApplication);
+                    if (await canLaunchUrl(telUrl)) {
+                      await launchUrl(
+                        telUrl,
+                        mode: LaunchMode.externalNonBrowserApplication,
+                      );
                     } else {
                       if (mounted) {
                         _showEmergencyDialog(context);

@@ -41,7 +41,7 @@ dependencies:
   flutter_map_marker_popup: ^7.0.0
   flutter_dotenv: ^5.2.1
   google_fonts: ^6.2.1
-  url_launcher: ^6.3.1
+  url_launcher: ^6.2.5
   geolocator: ^10.0.1
   rename: ^3.0.2
 
